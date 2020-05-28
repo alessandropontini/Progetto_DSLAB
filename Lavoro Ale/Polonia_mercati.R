@@ -86,3 +86,7 @@ autoplot(tt, main = "Prezzi")
 time_index <- seq(from =df_anno_prezzi_2012$dateTime[1], 
                   to = df_anno_prezzi_2012$dateTime[length(df_anno_prezzi_2012$dateTime)], by = "hour")
 eventdata <- xts(df_anno_prezzi_2012$prezzo, order.by = time_index)
+
+#5 migliore di tutti xts
+eventdata2 <- xts(df_anno_prezzi_2012$prezzo, order.by = df_anno_prezzi_2012$dateTime)
+plot.xts(eventdata2)
