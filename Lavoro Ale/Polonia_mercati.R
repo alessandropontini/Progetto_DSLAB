@@ -66,7 +66,7 @@ summary(df_anno_prezzi_2012$dateTime)
 new_DF<-subset(df_anno_prezzi_2012,is.na(df_anno_prezzi_2012$dateTime))
 
 df_anno_prezzi_2012[is.na(df_anno_prezzi_2012)] <- as.POSIXct("2012-03-25 02:00:00")
-
+#write.csv(df_anno_prezzi_2012, "/Volumes/HDD_Ale/Progetto_DSLAB/Lavoro Ale/Dataset/prezzi_polonia_2012.csv")
 #1
 cc <- zoo(df_anno_prezzi_2012[, c("dateTime", "prezzo")])
 cc <- ts(cc, frequency = 24)
