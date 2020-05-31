@@ -33,9 +33,16 @@ df_prezzi$ora <- stri_sub(df_prezzi$ora,2,3)
 df_prezzi <- df_prezzi %>% mutate(ora = paste0(ora,":00:00"))
 df_prezzi$date <- as.Date(with(df_prezzi, paste(anno, mese, giorno,sep="-")), "%Y-%m-%d")
 df_prezzi <- df_prezzi %>% arrange(date)
-df_prezzi$dateTime = as.POSIXct(paste0(df_prezzi$date,df_prezzi$ora))
+df_prezzi$dateTime = as.POSIXct(paste(df_prezzi$date,df_prezzi$ora), format="%Y-%m-%d %H:%M:%S")
 df_prezzi$DateYYYYMMDD <- NULL
+##########################################
+############## nan #######################
+##########################################
 
+summary(df_prezzi)
+new_DF<-subset(df_prezzi,is.na(df_prezzi$prezzo))
+
+# dobbiamo sistemare na.
 # CREO DATASET PER OGNI ANNO
 lista_anni <- c(2012,2013,2014,2015)
 datasets <- list()
