@@ -33,7 +33,7 @@ df_prezzi$ora <- stri_sub(df_prezzi$ora,2,3)
 df_prezzi <- df_prezzi %>% mutate(ora = paste0(ora,":00:00"))
 df_prezzi$date <- as.Date(with(df_prezzi, paste(anno, mese, giorno,sep="-")), "%Y-%m-%d")
 df_prezzi <- df_prezzi %>% arrange(date)
-df_prezzi$dateTime = as.POSIXct(paste(df_prezzi$date,df_prezzi$ora), format = "%Y-%m-%d %H:%M:%S")
+df_prezzi$dateTime = as.POSIXct(paste0(df_prezzi$date,df_prezzi$ora))
 df_prezzi$DateYYYYMMDD <- NULL
 
 # CREO DATASET PER OGNI ANNO
@@ -90,3 +90,10 @@ eventdata <- xts(df_anno_prezzi_2012$prezzo, order.by = time_index)
 #5 migliore di tutti xts
 eventdata2 <- xts(df_anno_prezzi_2012$prezzo, order.by = df_anno_prezzi_2012$dateTime)
 plot.xts(eventdata2)
+
+eventdata2 <- xts(df_prezzi$prezzo, order.by = df_prezzi$date)
+plot.xts(eventdata2)
+
+ts_2012 <- zoo(df_prezzi$prezzo, order.by = df_prezzi$date)
+ts_2012 <- ts(ts_2012, frequency = 35040)
+autoplot(ts_2012, main = "Prezzi")
