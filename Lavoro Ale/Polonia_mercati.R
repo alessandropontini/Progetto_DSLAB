@@ -18,12 +18,13 @@ dir_df1 <- "/Volumes/HDD_Ale/ElData/PL_1215_Price_byhour.csv"
 dir_df2 <- "/Volumes/HDD_Ale/ElData/PL_1215_Load_byhour.csv"
 
 df_prezzi <- read.csv(dir_df1)
+df_consumi <- read.csv(dir_df2)
 
 ####################################
 ###### PRE-PROCESSING ##############
 ####################################
 
-# SISTEMO DATE
+# SISTEMO DATE PREZZI
 df_prezzi$anno <- stri_sub(df_prezzi$DateYYYYMMDD,1,4)
 df_prezzi$mese <- stri_sub(df_prezzi$DateYYYYMMDD,5,6)
 df_prezzi$giorno <- stri_sub(df_prezzi$DateYYYYMMDD,7,8)
@@ -35,6 +36,22 @@ df_prezzi$date <- as.Date(with(df_prezzi, paste(anno, mese, giorno,sep="-")), "%
 df_prezzi <- df_prezzi %>% arrange(date)
 df_prezzi$dateTime = as.POSIXct(paste(df_prezzi$date,df_prezzi$ora), format="%Y-%m-%d %H:%M:%S")
 df_prezzi$DateYYYYMMDD <- NULL
+
+# SISTEMO DATE CONSUMI
+df_consumi$anno <- stri_sub(df_consumi$DateYYYYMMDD,1,4)
+df_consumi$mese <- stri_sub(df_consumi$DateYYYYMMDD,5,6)
+df_consumi$giorno <- stri_sub(df_consumi$DateYYYYMMDD,7,8)
+
+df_consumi <- df_consumi %>% gather("ora", "consumo", H01:H24)
+df_consumi$ora <- stri_sub(df_consumi$ora,2,3)
+df_consumi <- df_consumi %>% mutate(ora = paste0(ora,":00:00"))
+df_consumi$date <- as.Date(with(df_consumi, paste(anno, mese, giorno,sep="-")), "%Y-%m-%d")
+df_consumi <- df_consumi %>% arrange(date)
+df_consumi$dateTime = as.POSIXct(paste(df_consumi$date,df_consumi$ora), format="%Y-%m-%d %H:%M:%S")
+df_consumi$DateYYYYMMDD <- NULL
+
+totale <- left_join(df_prezzi, df_consumi, by = c("anno" = "anno", "mese" = "mese", "giorno"="giorno", "ora"="ora"))
+totale <- totale[, -c(9:10)]
 ##########################################
 ############## nan #######################
 ##########################################
@@ -43,6 +60,12 @@ summary(df_prezzi)
 new_DF<-subset(df_prezzi,is.na(df_prezzi$prezzo))
 
 # dobbiamo sistemare na.
+
+# 14/03/2013 è un giovedì e va sistemato. provo a vedere il giorno successivo e precedente
+df_prezzi %>% filter(anno=="2013",
+                     mese=="03",
+                     giorno==c("13","15"))
+str(df_prezzi)
 # CREO DATASET PER OGNI ANNO
 lista_anni <- c(2012,2013,2014,2015)
 datasets <- list()
