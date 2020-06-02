@@ -10,7 +10,8 @@ library(zoo)
 library(ggplot2)
 library(ggfortify)
 library(lubridate)
-require(xts)
+library(xts)
+library(forecast)
 ####################################
 ###### IMPORTO I DATASET ###########
 ####################################
@@ -271,7 +272,27 @@ totale <- totale[, -c(9:11)]
 
 #Sistemato tutti i nan
 summary(totale$prezzo)
+########################################
+######### TS TOTALE ####################
+########################################
+eventdata2 <- xts(totale$prezzo, order.by = totale$date.x)
+plot.xts(eventdata2)
 
+ts_2012 <- zoo(totale$prezzo, order.by = totale$date.x)
+ts_2012 <- ts(ts_2012, frequency = 8760)
+autoplot(ts_2012, main = "Prezzi")
+
+ggseasonplot(ts_2012, year.labels=TRUE, year.labels.left=TRUE)
+
+# STAGIONALITÀ mediana
+totale %>%
+  group_by(anno,mese) %>%
+  summarize(prezzimediani = median(prezzo)) -> stagioni
+
+ts_season_median <- zoo(stagioni$prezzimediani, order.by = stagioni$anno)
+ts_season_median <- ts(ts_season_median, frequency = 12, names=c("2012","2013","2014","2015"))
+ggseasonplot(ts_season_median,year.labels=TRUE)
+ 
 # CREO DATASET PER OGNI ANNO
 lista_anni <- c(2012,2013,2014,2015)
 datasets <- list()
@@ -326,10 +347,3 @@ eventdata <- xts(df_anno_prezzi_2012$prezzo, order.by = time_index)
 #5 migliore di tutti xts
 eventdata2 <- xts(df_anno_prezzi_2012$prezzo, order.by = df_anno_prezzi_2012$dateTime)
 plot.xts(eventdata2)
-
-eventdata2 <- xts(df_prezzi$prezzo, order.by = df_prezzi$date)
-plot.xts(eventdata2)
-
-ts_2012 <- zoo(df_prezzi$prezzo, order.by = df_prezzi$date)
-ts_2012 <- ts(ts_2012, frequency = 35040)
-autoplot(ts_2012, main = "Prezzi")
