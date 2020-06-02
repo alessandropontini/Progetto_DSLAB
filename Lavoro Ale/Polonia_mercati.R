@@ -292,7 +292,9 @@ totale %>%
 ts_season_median <- zoo(stagioni$prezzimediani, order.by = stagioni$anno)
 ts_season_median <- ts(ts_season_median, frequency = 12, names=c("2012","2013","2014","2015"))
 ggseasonplot(ts_season_median,year.labels=TRUE)
- 
+ggseasonplot(ts_season_median,polar = TRUE)
+
+
 # CREO DATASET PER OGNI ANNO
 lista_anni <- c(2012,2013,2014,2015)
 datasets <- list()
@@ -316,6 +318,14 @@ df_anno_prezzi_2015 <- df_anno_prezzi_2015 %>%
 ############################################################
 ########## TENTATIVI DI TS #################################
 ############################################################
+# aggrego per 365 giorni 2012
+totale %>%
+  group_by(mese,giorno) %>%
+  summarize(prezzimediani = median(prezzo)) -> stagioni_2012_giorno
+
+ts_season_median <- zoo(stagioni_2012_giorno$prezzimediani, order.by = c(stagioni_2012_giorno$mese,stagioni_2012_giorno$giorno))
+ts_season_median <- ts(ts_season_median, frequency = 366)
+autoplot(ts_season_median)
 
 # FIX NA
 summary(df_anno_prezzi_2012$dateTime)
