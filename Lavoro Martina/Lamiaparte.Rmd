@@ -106,4 +106,26 @@ summary(df_prezzi)
 ```{r}
 summary(df_consumi)
 ```
-Controllo i Na: 
+
+
+```{r}
+totale
+totale <- left_join(df_prezzi, df_consumi, by = c("anno" = "anno", "mese" = "mese", "giorno"="giorno", "ora"="ora"))
+totale <- totale[, -c(9:10)]
+totale
+```
+Controllo i NA
+```{r}
+apply(totale, 2, function(x) any(is.na(x)))
+apply(totale, 2, function(x) any(is.nan(x)))
+summary(totale)
+```
+Si vede che ci sono dei Na in dateTime.x. Per calcolare quanti sono facciamo:
+```{r}
+apply(is.na(totale),2,sum)
+```
+Quindi risultano essere 4. 
+```{r}
+which(is.na(df_prezzi$dateTime))
+which(is.na(df_consumi$dateTime))
+```
