@@ -129,3 +129,82 @@ Quindi risultano essere 4.
 which(is.na(df_prezzi$dateTime))
 which(is.na(df_consumi$dateTime))
 ```
+Creo un dataset per ogni anno.
+```{r}
+lista_anni <- c(2012,2013,2014,2015)
+datasets <- list()
+for(i in lista_anni){
+  df_prezzi %>% filter(anno==i) -> x
+  assign(paste0('df_anno_prezzi_',i), x)
+  datasets <- append(datasets,paste0('df_anno_prezzi',i))
+}
+```
+Sposto la colonna data all'inizio. 
+```{r}
+df_anno_prezzi_2012 <- df_anno_prezzi_2012 %>%
+  select(date, everything())
+df_anno_prezzi_2013 <- df_anno_prezzi_2013 %>%
+  select(date, everything())
+df_anno_prezzi_2014 <- df_anno_prezzi_2014 %>%
+  select(date, everything())
+df_anno_prezzi_2015 <- df_anno_prezzi_2015 %>%
+  select(date, everything())
+```
+
+Inizio con il 2012:
+```{r}
+df_anno_prezzi_2012$ID <- seq.int(nrow(df_anno_prezzi_2012))
+summary(df_anno_prezzi_2012$dateTime)
+#c'è un NaN
+which(is.na(df_anno_prezzi_2012$dateTime))
+#nella posizione numero 2018
+new_DF<-subset(df_anno_prezzi_2012,is.na(df_anno_prezzi_2012$dateTime)) #prende l'intersezione tra questi due dataset
+# 2012-03-25 2:00:00 in questo modo ho capito con che cosa sostituire il NaN
+df_anno_prezzi_2012[is.na(df_anno_prezzi_2012)] <- as.POSIXct("2012-03-25 02:00:00")
+summary(df_anno_prezzi_2012)
+df_anno_prezzi_2012[2018,]
+```
+Guardo ora il 2013:
+```{r}
+df_anno_prezzi_2013$ID <- seq.int(nrow(df_anno_prezzi_2013))
+summary(df_anno_prezzi_2013$dateTime)
+#c'è un NaN
+which(is.na(df_anno_prezzi_2013$dateTime))
+#nella posizione numero 2018
+new_DF<-subset(df_anno_prezzi_2013,is.na(df_anno_prezzi_2013$dateTime)) #prende l'intersezione tra questi due dataset
+new_DF
+# 2013-03-31 2:00:00 in questo modo ho capito con che cosa sostituire il NaN
+df_anno_prezzi_2013[is.na(df_anno_prezzi_2013)] <- as.POSIXct("2013-03-31 02:00:00")
+summary(df_anno_prezzi_2012)
+df_anno_prezzi_2013[2138,]
+```
+Guardo il 2014:
+```{r}
+df_anno_prezzi_2014$ID <- seq.int(nrow(df_anno_prezzi_2014))
+summary(df_anno_prezzi_2014$dateTime)
+#c'è un NaN
+which(is.na(df_anno_prezzi_2014$dateTime))
+#nella posizione numero 2018
+new_DF<-subset(df_anno_prezzi_2014,is.na(df_anno_prezzi_2014$dateTime)) #prende l'intersezione tra questi due dataset
+new_DF
+# 2014-03-31 2:00:00 in questo modo ho capito con che cosa sostituire il NaN
+df_anno_prezzi_2014[is.na(df_anno_prezzi_2014)] <- as.POSIXct("2014-03-31 02:00:00")
+summary(df_anno_prezzi_2014)
+df_anno_prezzi_2014[2138,]
+```
+Guardo il 2015:
+
+```{r}
+df_anno_prezzi_2015$ID <- seq.int(nrow(df_anno_prezzi_2015))
+summary(df_anno_prezzi_2015$dateTime)
+#c'è un NaN
+which(is.na(df_anno_prezzi_2015$dateTime))
+#nella posizione numero 2018
+new_DF<-subset(df_anno_prezzi_2015,is.na(df_anno_prezzi_2015$dateTime)) #prende l'intersezione tra questi due dataset
+new_DF
+# 2015-03-29 2:00:00 in questo modo ho capito con che cosa sostituire il NaN
+df_anno_prezzi_2015[is.na(df_anno_prezzi_2015)] <- as.POSIXct("2013-03-31 02:00:00")
+summary(df_anno_prezzi_2012)
+df_anno_prezzi_2015[2090,]
+```
+
