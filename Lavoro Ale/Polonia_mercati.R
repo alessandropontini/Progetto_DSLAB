@@ -271,7 +271,31 @@ new_DF <- subset(totale,is.na(totale$prezzo))
 totale <- totale[, -c(9:11)]
 
 #Sistemato tutti i nan
-summary(totale$prezzo)
+summary(totale)
+
+########################################
+##### SISTEMO DATETIME NA ##############
+########################################
+
+new_DF<-subset(totale,is.na(totale$dateTime.x))
+
+# ci sono 4 date da sistemare inizio dalla prima
+# 2012   03     25 02:00:00
+# 2013   03     31 02:00:00
+# 2014   03     30 02:00:00
+# 2015   03     29 02:00:00
+totale %>% mutate(dateTime.x = if_else((giorno =="25") & (anno == "2012") & (mese == "03") & (ora=="02:00:00"), as.POSIXct("2012-03-25 02:00:00"), dateTime.x)) -> totale 
+totale %>% mutate(dateTime.x = if_else((giorno =="31") & (anno == "2013") & (mese == "03") & (ora=="02:00:00"), as.POSIXct("2012-03-25 02:00:00"), dateTime.x)) -> totale 
+totale %>% mutate(dateTime.x = if_else((giorno =="30") & (anno == "2014") & (mese == "03") & (ora=="02:00:00"), as.POSIXct("2012-03-25 02:00:00"), dateTime.x)) -> totale 
+totale %>% mutate(dateTime.x = if_else((giorno =="29") & (anno == "2015") & (mese == "03") & (ora=="02:00:00"), as.POSIXct("2012-03-25 02:00:00"), dateTime.x)) -> totale 
+
+summary(totale)
+
+########################################
+##### FINITI NA ########################
+########################################
+
+
 ########################################
 ######### TS TOTALE ####################
 ########################################
