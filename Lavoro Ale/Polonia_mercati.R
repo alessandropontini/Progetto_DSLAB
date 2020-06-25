@@ -370,8 +370,9 @@ tot %>% as.data.frame() -> totdata
 colnames(tot)[1] <- "Consumi"
 colnames(tot)[2] <- "Prezzi"
 
-totdata[2,1]
-risultato[[1]] <- 0
+########################################
+##PREPARATO LE VARIAZIONI PERCENTUALI###
+########################################
 percentuali <- function(x,y){
   
   risultato <- list()
@@ -408,6 +409,35 @@ totdata <- cbind(totdata,prezziperc)
 colnames(totdata)[4] <- "Prezzoperc"
 
 totdata
+
+totdata %>%
+  as.data.frame() %>%
+  ggplot(aes(x=Consumiperc, y=Prezzoperc)) +
+  ylab("Consume") +
+  xlab("Price") +
+  geom_point() +
+  geom_smooth(method="lm", se=FALSE)
+
+
+colnames(tot)[1] <- "Consumi"
+colnames(tot)[2] <- "Prezzi"
+colnames(tot)[3] <- "consumitsperc"
+
+tot
+
+fit.consMR <- tslm(
+  Consumi ~ Prezzi,
+  data=tot)
+summary(fit.consMR)
+
+# appesantisce il tutto
+# checkresiduals(fit.consMR)
+
+prova <- window(tot)
+
+fit.beer <- tslm(prova ~ trend + season)
+summary(fit.beer)
+
 ########################################
 ######### TS TOTALE ####################
 ########################################
