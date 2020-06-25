@@ -289,13 +289,81 @@ totale %>% mutate(dateTime.x = if_else((giorno =="31") & (anno == "2013") & (mes
 totale %>% mutate(dateTime.x = if_else((giorno =="30") & (anno == "2014") & (mese == "03") & (ora=="02:00:00"), as.POSIXct("2012-03-25 02:00:00"), dateTime.x)) -> totale 
 totale %>% mutate(dateTime.x = if_else((giorno =="29") & (anno == "2015") & (mese == "03") & (ora=="02:00:00"), as.POSIXct("2012-03-25 02:00:00"), dateTime.x)) -> totale 
 
-summary(totale)
+summary(totale) 
 
 ########################################
 ##### FINITI NA ########################
 ########################################
 
+########################################
+######### CONSUMI ######################
+########################################
+try <- ts(totale$consumo, frequency = 8760, start = c(2012, 1))
+autoplot(try)
 
+########################################
+############### PREZZI #################
+########################################
+try2 <- ts(totale$prezzo, frequency = 8760, start = c(2012, 1))
+autoplot(try2)
+datalist <- list(consumi = try, prezzi = try2)
+
+fit.consMR <- tslm(datalist$consumi ~ datalist$prezzi ,data=datalist)
+summary(fit.consMR)
+uschange
+summary(totale)
+firstHour <- 24*(as.Date("2016-01-01 00:00:00")-as.Date("2012-01-01 00:00:00"))
+tt <- ts(totale$consumo,start=c(2012, 01:00:00 ),frequency=24*365)
+autoplot(tt)
+
+?naive
+
+naive(try)
+naive(try2)
+rwf(try , h=10, drift=TRUE)
+# Set training data from 1992 to 2007
+
+# Plot some forecasts
+autoplot(try) +
+  autolayer(meanf(try, h=8760),
+            series="Mean", PI=FALSE) +
+  autolayer(naive(try, h=8760),
+            series="Naïve", PI=FALSE) +
+  autolayer(snaive(try, h=8760),
+            series="Seasonal naïve", PI=FALSE) +
+  ggtitle("Forecasts for Elettricity production") +
+  xlab("Year") + ylab("Kwatt") +
+  guides(colour=guide_legend(title="Forecast"))
+
+
+(lambda <- BoxCox.lambda(try))
+
+autoplot(BoxCox(try,lambda))
+
+fc <- rwf(try, drift=TRUE, lambda=1, h=, level=80)
+fc2 <- rwf(try, drift=TRUE, lambda=1, h=100, level=80,
+           biasadj=TRUE)
+autoplot(try) +
+  autolayer(fc, series="Simple back transformation") +
+  autolayer(fc2, series="Bias adjusted", PI=FALSE) +
+  guides(colour=guide_legend(title="Forecast"))
+
+checkresiduals(try)
+
+autoplot(datalist$consumi) +
+  ylab("% change") + xlab("Year")
+
+
+#############################################
+######COME METTERE IN REGRESSIONE DATI#######
+#############################################
+
+
+tot <- cbind(try,try2)
+tot
+autoplot(tot[,c("try", "try2")]) +
+  ylab("% change") + xlab("Year")
+datalist
 ########################################
 ######### TS TOTALE ####################
 ########################################
