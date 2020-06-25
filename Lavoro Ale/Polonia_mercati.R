@@ -173,7 +173,7 @@ names(fixna15)[5] <- "prezzo14"
 fixna15$prezzi13 <- apply(fixna15[,c(4,5)], 1, mean)
 
 fixna15$giorno13 <- "13"
-fixna15
+
 totale <- left_join(totale, fixna15, by = c("anno" = "anno", "mese" = "mese", "giorno"="giorno13", "ora"="ora"))
 
 totale %>% mutate(prezzo = if_else((giorno =="13") & (anno == "2013") & (mese == "06"), prezzi13, prezzo)) -> totale
@@ -202,7 +202,7 @@ names(fixna15)[5] <- "prezzo24"
 fixna15$prezzi23 <- apply(fixna15[,c(4,5)], 1, mean)
 
 fixna15$giorno23 <- "23"
-fixna15
+
 totale <- left_join(totale, fixna15, by = c("anno" = "anno", "mese" = "mese", "giorno"="giorno23", "ora"="ora"))
 
 totale %>% mutate(prezzo = if_else((giorno =="23") & (anno == "2014") & (mese == "01"), prezzi23, prezzo)) -> totale
@@ -364,6 +364,50 @@ tot
 autoplot(tot[,c("try", "try2")]) +
   ylab("% change") + xlab("Year")
 datalist
+
+tot %>% as.data.frame() -> totdata
+
+colnames(tot)[1] <- "Consumi"
+colnames(tot)[2] <- "Prezzi"
+
+totdata[2,1]
+risultato[[1]] <- 0
+percentuali <- function(x,y){
+  
+  risultato <- list()
+  risultato[[1]] <- 0
+  k <- x[1,y]
+  
+  for (i in 2:35064) {
+    risultato[[i]] <- ((x[i,y]-k)*100)/k
+    k <- x[i,y]
+  }
+  return(risultato)
+}
+
+consumiperc <- percentuali(totdata,1)
+consumiperc <- data.frame(matrix(unlist(consumiperc), nrow=35064, byrow=T),stringsAsFactors=FALSE)
+
+prezziperc <- percentuali(totdata,2)
+prezziperc <- data.frame(matrix(unlist(prezziperc), nrow=35064, byrow=T),stringsAsFactors=FALSE)
+
+
+consumitsperc <- ts(consumiperc, frequency = 8760, start = c(2012, 1))
+prezzitsperc <- ts(prezziperc, frequency = 8760, start = c(2012, 1))
+
+tot <- cbind(tot, consumitsperc)
+tot <- cbind(tot, prezzitsperc)
+
+tot 
+
+totdata <- cbind(totdata,consumiperc)
+colnames(totdata)[1] <- "Consumi"
+colnames(totdata)[2] <- "Prezzi"
+colnames(totdata)[3] <- "Consumiperc"
+totdata <- cbind(totdata,prezziperc)
+colnames(totdata)[4] <- "Prezzoperc"
+
+totdata
 ########################################
 ######### TS TOTALE ####################
 ########################################
