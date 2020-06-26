@@ -15,8 +15,8 @@ library(forecast)
 ####################################
 ###### IMPORTO I DATASET ###########
 ####################################
-dir_df1 <- "/Volumes/HDD_Ale/ElData/PL_1215_Price_byhour.csv"
-dir_df2 <- "/Volumes/HDD_Ale/ElData/PL_1215_Load_byhour.csv"
+dir_df1 <- "/Volumes/HDD_Ale2/ElData/PL_1215_Price_byhour.csv"
+dir_df2 <- "/Volumes/HDD_Ale2/ElData/PL_1215_Load_byhour.csv"
 
 df_prezzi <- read.csv(dir_df1)
 df_consumi <- read.csv(dir_df2)
@@ -423,7 +423,6 @@ colnames(tot)[1] <- "Consumi"
 colnames(tot)[2] <- "Prezzi"
 colnames(tot)[3] <- "consumitsperc"
 
-tot
 
 fit.consMR <- tslm(
   Consumi ~ Prezzi,
@@ -433,11 +432,43 @@ summary(fit.consMR)
 # appesantisce il tutto
 # checkresiduals(fit.consMR)
 
-prova <- window(tot)
+# prova <- window(tot)
+# 
+# fit.beer <- tslm(prova ~ trend + season)
+# summary(fit.beer)
 
-fit.beer <- tslm(prova ~ trend + season)
-summary(fit.beer)
 
+######################################################
+######### WEB SCRAPING ###############################
+######################################################
+if (!("rvest" %in% installed.packages())) {
+  install.packages("rvest")
+}
+if (!("dplyr" %in% installed.packages())) {
+  install.packages("dplyr")
+}
+library(rvest)
+library(dplyr)
+
+# DA 2012-01-01 A 2015-12-31
+
+weatherpage <- "https://www.timeanddate.com/weather/poland/warsaw/historic?month=1&year=2012"
+
+weather <- read_html(weatherpage)
+rvea
+body_nodes <- weather %>% 
+  html_node("body", "//td") %>% 
+  html_children()
+body_nodes[1]
+?rvest
+
+a <- rvest::html_nodes(weather,"tr")
+b <- html_text(a)
+b <- b[-c(1:7)]
+b <- b[-c(46)]
+class(b)
+
+b
 ########################################
 ######### TS TOTALE ####################
 ########################################
