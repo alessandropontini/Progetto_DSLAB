@@ -64,7 +64,107 @@ apply(totale, 2, function(x) any(is.na(x)))
 apply(totale, 2, function(x) any(is.nan(x)))
 summary(totale)
 
-# Ci sono na in dateTime.x 
+# Correzione
+# ci sono 4 date da sistemare inizio dalla prima
+# 2012   03     25 02:00:00
+# 2013   03     31 02:00:00
+# 2014   03     30 02:00:00
+# 2015   03     29 02:00:00
+
+totale %>%
+  mutate(dateTime.x = if_else((giorno =="25")
+                              & (anno == "2012")
+                              & (mese == "03")
+                              & (ora=="02:00:00"),
+                              as.POSIXct("2012-03-25 02:00:00"),
+                              dateTime.x)) -> totale
+
+totale %>% mutate(dateTime.x = if_else((giorno =="31")
+                                       & (anno == "2013")
+                                       & (mese == "03")
+                                       & (ora=="02:00:00"),
+                                       as.POSIXct("2013-03-31 02:00:00"),
+                                       dateTime.x)) -> totale
+
+totale %>% mutate(dateTime.x = if_else((giorno =="30")
+                                       & (anno == "2014")
+                                       & (mese == "03")
+                                       & (ora=="02:00:00"),
+                                       as.POSIXct("2014-03-30 02:00:00"),
+                                       dateTime.x)) -> totale
+
+totale %>% mutate(dateTime.x = if_else((giorno =="29")
+                                       & (anno == "2015")
+                                       & (mese == "03")
+                                       & (ora=="02:00:00"),
+                                       as.POSIXct("2015-03-29 02:00:00"),
+                                       dateTime.x)) -> totale
+# totale pulito
+###################################################################
+# df_prezzi
+
+df_prezzi %>%
+  mutate(dateTime = if_else((giorno =="25")
+                              & (anno == "2012")
+                              & (mese == "03")
+                              & (ora=="02:00:00"),
+                              as.POSIXct("2012-03-25 02:00:00"),
+                              dateTime)) -> df_prezzi
+
+df_prezzi %>% mutate(dateTime = if_else((giorno =="31")
+                                       & (anno == "2013")
+                                       & (mese == "03")
+                                       & (ora=="02:00:00"),
+                                       as.POSIXct("2013-03-31 02:00:00"),
+                                       dateTime)) -> df_prezzi
+
+df_prezzi %>% mutate(dateTime = if_else((giorno =="30")
+                                       & (anno == "2014")
+                                       & (mese == "03")
+                                       & (ora=="02:00:00"),
+                                       as.POSIXct("2014-03-30 02:00:00"),
+                                       dateTime)) -> df_prezzi
+
+df_prezzi %>% mutate(dateTime = if_else((giorno =="29")
+                                       & (anno == "2015")
+                                       & (mese == "03")
+                                       & (ora=="02:00:00"),
+                                       as.POSIXct("2015-03-29 02:00:00"),
+                                       dateTime)) -> df_prezzi
+
+# df_consumi
+
+df_consumi %>%
+  mutate(dateTime = if_else((giorno =="25")
+                            & (anno == "2012")
+                            & (mese == "03")
+                            & (ora=="02:00:00"),
+                            as.POSIXct("2012-03-25 02:00:00"),
+                            dateTime)) -> df_consumi
+
+df_consumi %>% mutate(dateTime = if_else((giorno =="31")
+                                        & (anno == "2013")
+                                        & (mese == "03")
+                                        & (ora=="02:00:00"),
+                                        as.POSIXct("2013-03-31 02:00:00"),
+                                        dateTime)) ->df_consumi
+
+df_consumi %>% mutate(dateTime = if_else((giorno =="30")
+                                        & (anno == "2014")
+                                        & (mese == "03")
+                                        & (ora=="02:00:00"),
+                                        as.POSIXct("2014-03-30 02:00:00"),
+                                        dateTime)) -> df_consumi
+
+df_consumi %>% mutate(dateTime = if_else((giorno =="29")
+                                        & (anno == "2015")
+                                        & (mese == "03")
+                                        & (ora=="02:00:00"),
+                                        as.POSIXct("2015-03-29 02:00:00"),
+                                        dateTime)) -> df_consumi
+
+############################################################################################
+# Ci sono na in dateTime.x__________________FATTO
 
 # Vediamo quanti sono
 apply(is.na(totale),2,sum)
@@ -130,30 +230,16 @@ summary(df_anno_prezzi_2012$dateTime)
 which(is.na(df_anno_prezzi_2012$dateTime))
 
 new_DF<-subset(df_anno_prezzi_2012,is.na(df_anno_prezzi_2012$dateTime))
-# 1994
-
-df_anno_prezzi_2012[is.na(df_anno_prezzi_2012)] <- as.POSIXct("2012-03-25 02:00:00")
 
 summary(df_anno_prezzi_2012)
-
-df_anno_prezzi_2012[1994,]
-
 # CONSUMI
 df_anno_consumi_2012$ID <- seq.int(nrow(df_anno_consumi_2012))
 # FIX NA
 summary(df_anno_consumi_2012$dateTime)
 
 which(is.na(df_anno_consumi_2012$dateTime))
-# 2018
-new_DF<-subset(df_anno_consumi_2012,is.na(df_anno_consumi_2012$dateTime))
-new_DF
-
-df_anno_consumi_2012[is.na(df_anno_consumi_2012)] <- as.POSIXct("2012-03-25 02:00:00")
 
 summary(df_anno_consumi_2012)
-
-df_anno_consumi_2012[2018,]
-# Non corretto
 
 # 2013
 # PREZZI
@@ -164,14 +250,8 @@ summary(df_anno_prezzi_2013$dateTime)
 which(is.na(df_anno_prezzi_2013$dateTime))
 
 new_DF<-subset(df_anno_prezzi_2013,is.na(df_anno_prezzi_2013$dateTime))
-# 2138 
-df_anno_prezzi_2013[is.na(df_anno_prezzi_2013)] <- as.POSIXct("2013-03-31 02:00:00")
 
 summary(df_anno_prezzi_2013)
-
-df_anno_prezzi_2013[2138,]
-
-# Manca l'ora
 
 # CONSUMI
 df_anno_consumi_2013$ID <- seq.int(nrow(df_anno_consumi_2013))
@@ -181,14 +261,8 @@ summary(df_anno_consumi_2013$dateTime)
 which(is.na(df_anno_consumi_2013$dateTime))
 
 new_DF<-subset(df_anno_consumi_2013,is.na(df_anno_consumi_2013$dateTime))
-# 2138 
-df_anno_consumi_2013[is.na(df_anno_consumi_2013)] <- as.POSIXct("2013-03-31 02:00:00")
 
 summary(df_anno_consumi_2013)
-
-df_anno_consumi_2013[2138,]
-
-# Manca l'ora
 
 # 2014
 # PREZZI
@@ -199,14 +273,8 @@ summary(df_anno_prezzi_2014$dateTime)
 which(is.na(df_anno_prezzi_2014$dateTime))
 
 new_DF<-subset(df_anno_prezzi_2014,is.na(df_anno_prezzi_2014$dateTime))
-# 2114
-
-df_anno_prezzi_2014[is.na(df_anno_prezzi_2014)] <- as.POSIXct("2014-03-30 02:00:00")
 
 summary(df_anno_prezzi_2014)
-df_anno_prezzi_2014[2114,]
-
-# Manca l'ora
 
 # CONSUMI
 df_anno_consumi_2014$ID <- seq.int(nrow(df_anno_consumi_2014))
@@ -216,16 +284,8 @@ summary(df_anno_consumi_2014$dateTime)
 which(is.na(df_anno_consumi_2014$dateTime))
 
 new_DF<-subset(df_anno_consumi_2014,is.na(df_anno_consumi_2014$dateTime))
-# 2114
-
-df_anno_consumi_2014[is.na(df_anno_consumi_2014)] <- as.POSIXct("2014-03-30 02:00:00")
 
 summary(df_anno_consumi_2014)
-df_anno_consumi_2014[2114,]
-
-# Manca l'ora
-
-
 
 # 2015
 # PREZZI
@@ -236,18 +296,10 @@ summary(df_anno_prezzi_2015$dateTime)
 which(is.na(df_anno_prezzi_2015$dateTime))
 
 new_DF<-subset(df_anno_prezzi_2015,is.na(df_anno_prezzi_2015$dateTime))
-# 2090
-
-df_anno_prezzi_2015[is.na(df_anno_prezzi_2015)] <- as.POSIXct("2015-03-29 02:00:00")
 
 summary(df_anno_prezzi_2015)
 
 df_anno_prezzi_2015[2090,]
-# Manca l'ora
-
-# Correzione non giusta 
-# guarda riga 2090
-
 
 # 2015
 # CONSUMI
@@ -258,19 +310,10 @@ summary(df_anno_consumi_2015$dateTime)
 which(is.na(df_anno_consumi_2015$dateTime))
 
 new_DF<-subset(df_anno_consumi_2015,is.na(df_anno_consumi_2015$dateTime))
-# 2090
-
-df_anno_consumi_2015[is.na(df_anno_consumi_2015)] <- as.POSIXct("2015-03-29 02:00:00")
 
 summary(df_anno_consumi_2015)
 
-df_anno_consumi_2015[2090,]
-# Manca l'ora
-
-# Correzione non giusta 
-# guarda riga 2090
-
-
+########################################################################################################
 # PROVE ALESSANDRO
 # mi concentro su 2012
 ############################################################
@@ -424,3 +467,9 @@ elecdemand<-c(yprezzi, yconsumi)
 
 
 # git per modifica e aggiornamento?????
+
+##################################################################################################
+
+
+
+
