@@ -296,6 +296,360 @@ summary(totale)
 ########################################
 
 ########################################
+######## TEMPERATURE AGGIUNTE ##########
+########################################
+
+temperature <- read.csv("/Users/alessandropontini/Desktop/tot_temperature.csv")
+
+temperature %>% filter(Anno=="2012") -> temperature_2012
+totale %>% filter(anno=="2012") -> totale_2012
+v = list("1", "2", "3", "4", "5", "6", "7", "8", "9")
+
+
+temperature_2012$Giorno <-  as.character(temperature_2012$Giorno)
+temperature_2012$Mese <-  as.character(temperature_2012$Mese)
+
+temperature_2012 %>% mutate(Giorno = if_else(Giorno %in% v, paste0("0",Giorno), Giorno)) -> temperature_2012
+temperature_2012 %>% mutate(Mese = if_else(Mese %in% v, paste0("0",Mese), Mese)) -> temperature_2012
+
+temperature_2012$OraFix <-  as.character(temperature_2012$OraFix)
+temperature_2012 %>% mutate(OraFix = paste0(OraFix,":00")) -> temperature_2012
+
+
+totale_2012 <- left_join(totale_2012, temperature_2012, by = c("giorno" = "Giorno", "mese" = "Mese", "ora" = "OraFix"))
+totale_2012 <- totale_2012[-c(9)]
+tail(temperature_2012)
+
+#########################################
+##### fix na ############################
+######################################### 
+
+# gennaio
+totale_2012 %>% filter(mese=='01') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix,na.rm = TRUE )
+totale_2012 %>% filter(mese=='01') %>% replace_na(list(GradoFix=mediana)) -> gennaio_2012
+
+# febbraio 
+totale_2012 %>% filter(mese=='02') -> febbraio_2012
+mediana <- median(febbraio_2012$GradoFix,na.rm = TRUE )
+totale_2012 %>% filter(mese=='02') %>% replace_na(list(GradoFix=mediana)) -> febbraio_2012
+
+# marzo 
+totale_2012 %>% filter(mese=='03') -> marzo_2012
+mediana <- median(marzo_2012$GradoFix,na.rm = TRUE )
+totale_2012 %>% filter(mese=='03') %>% replace_na(list(GradoFix=mediana)) -> marzo_2012
+
+# aprile 
+totale_2012 %>% filter(mese=='04') -> aprile_2012
+mediana <- median(aprile_2012$GradoFix,na.rm = TRUE )
+totale_2012 %>% filter(mese=='04') %>% replace_na(list(GradoFix=mediana)) -> aprile_2012
+
+# maggio 
+totale_2012 %>% filter(mese=='05') -> maggio_2012
+mediana <- median(maggio_2012$GradoFix,na.rm = TRUE )
+totale_2012 %>% filter(mese=='05') %>% replace_na(list(GradoFix=mediana)) -> maggio_2012
+
+# giugno 
+totale_2012 %>% filter(mese=='06') -> giugno_2012
+mediana <- median(giugno_2012$GradoFix,na.rm = TRUE )
+totale_2012 %>% filter(mese=='06') %>% replace_na(list(GradoFix=mediana)) -> giugno_2012
+
+# luglio 
+totale_2012 %>% filter(mese=='07') -> luglio_2012
+mediana <- median(luglio_2012$GradoFix,na.rm = TRUE )
+totale_2012 %>% filter(mese=='07') %>% replace_na(list(GradoFix=mediana)) -> luglio_2012
+
+# agosto 
+totale_2012 %>% filter(mese=='08') -> agosto_2012
+mediana <- median(agosto_2012$GradoFix,na.rm = TRUE )
+totale_2012 %>% filter(mese=='08') %>% replace_na(list(GradoFix=mediana)) -> agosto_2012
+
+# settembre 
+totale_2012 %>% filter(mese=='09') -> settembre_2012
+mediana <- median(settembre_2012$GradoFix,na.rm = TRUE )
+totale_2012 %>% filter(mese=='09') %>% replace_na(list(GradoFix=mediana)) -> settembre_2012
+
+# ottobre 
+totale_2012 %>% filter(mese=='10') -> ottobre_2012
+mediana <- median(ottobre_2012$GradoFix,na.rm = TRUE )
+totale_2012 %>% filter(mese=='10') %>% replace_na(list(GradoFix=mediana)) -> ottobre_2012
+
+# novembre 
+totale_2012 %>% filter(mese=='11') -> novembre_2012
+mediana <- median(novembre_2012$GradoFix,na.rm = TRUE )
+totale_2012 %>% filter(mese=='11') %>% replace_na(list(GradoFix=mediana)) -> novembre_2012
+
+# dicembre 
+totale_2012 %>% filter(mese=='12') -> dicembre_2012
+mediana <- median(dicembre_2012$GradoFix,na.rm = TRUE )
+totale_2012 %>% filter(mese=='12') %>% replace_na(list(GradoFix=mediana)) -> dicembre_2012
+
+totale_2012<- do.call("rbind", list(gennaio_2012, febbraio_2012, marzo_2012, aprile_2012, maggio_2012, giugno_2012,luglio_2012, agosto_2012, settembre_2012, ottobre_2012, novembre_2012, dicembre_2012))
+nrow(totale_2012)
+
+# 2013
+temperature %>% filter(Anno=="2013") -> temperature_2013
+totale %>% filter(anno=="2013") -> totale_2013
+
+nrow(totale_2013)
+temperature_2013$Giorno <-  as.character(temperature_2013$Giorno)
+temperature_2013$Mese <-  as.character(temperature_2013$Mese)
+
+temperature_2013 %>% mutate(Giorno = if_else(Giorno %in% v, paste0("0",Giorno), Giorno)) -> temperature_2013
+temperature_2013 %>% mutate(Mese = if_else(Mese %in% v, paste0("0",Mese), Mese)) -> temperature_2013
+
+temperature_2013$OraFix <-  as.character(temperature_2013$OraFix)
+temperature_2013 %>% mutate(OraFix = paste0(OraFix,":00")) -> temperature_2013
+
+
+totale_2013 <- left_join(totale_2013, temperature_2013, by = c("giorno" = "Giorno", "mese" = "Mese", "ora" = "OraFix"))
+nrow(totale_2013)
+
+totale_2013 <- unique(totale_2013_prova)
+
+# gennaio
+totale_2013 %>% filter(mese=='01') -> gennaio_2013
+mediana <- median(gennaio_2013$GradoFix,na.rm = TRUE )
+totale_2013 %>% filter(mese=='01') %>% replace_na(list(GradoFix=mediana)) -> gennaio_2013
+
+# febbraio 
+totale_2013 %>% filter(mese=='02') -> febbraio_2013
+mediana <- median(febbraio_2013$GradoFix,na.rm = TRUE )
+totale_2013 %>% filter(mese=='02') %>% replace_na(list(GradoFix=mediana)) -> febbraio_2013
+
+# marzo 
+totale_2013 %>% filter(mese=='03') -> marzo_2013
+mediana <- median(marzo_2013$GradoFix,na.rm = TRUE )
+totale_2013 %>% filter(mese=='03') %>% replace_na(list(GradoFix=mediana)) -> marzo_2013
+
+# aprile 
+totale_2013 %>% filter(mese=='04') -> aprile_2013
+mediana <- median(aprile_2013$GradoFix,na.rm = TRUE )
+totale_2013 %>% filter(mese=='04') %>% replace_na(list(GradoFix=mediana)) -> aprile_2013
+
+# maggio 
+totale_2013 %>% filter(mese=='05') -> maggio_2013
+mediana <- median(maggio_2013$GradoFix,na.rm = TRUE )
+totale_2013 %>% filter(mese=='05') %>% replace_na(list(GradoFix=mediana)) -> maggio_2013
+
+# giugno 
+totale_2013 %>% filter(mese=='06') -> giugno_2013
+mediana <- median(giugno_2013$GradoFix,na.rm = TRUE )
+totale_2013 %>% filter(mese=='06') %>% replace_na(list(GradoFix=mediana)) -> giugno_2013
+
+# luglio 
+totale_2013 %>% filter(mese=='07') -> luglio_2013
+mediana <- median(luglio_2013$GradoFix,na.rm = TRUE )
+totale_2013 %>% filter(mese=='07') %>% replace_na(list(GradoFix=mediana)) -> luglio_2013
+
+# agosto 
+totale_2013 %>% filter(mese=='08') -> agosto_2013
+mediana <- median(agosto_2013$GradoFix,na.rm = TRUE )
+totale_2013 %>% filter(mese=='08') %>% replace_na(list(GradoFix=mediana)) -> agosto_2013
+
+# settembre 
+totale_2013 %>% filter(mese=='09') -> settembre_2013
+mediana <- median(settembre_2013$GradoFix,na.rm = TRUE )
+totale_2013 %>% filter(mese=='09') %>% replace_na(list(GradoFix=mediana)) -> settembre_2013
+
+# ottobre 
+totale_2013 %>% filter(mese=='10') -> ottobre_2013
+mediana <- median(ottobre_2013$GradoFix,na.rm = TRUE )
+totale_2013 %>% filter(mese=='10') %>% replace_na(list(GradoFix=mediana)) -> ottobre_2013
+
+# novembre 
+totale_2013 %>% filter(mese=='11') -> novembre_2013
+mediana <- median(novembre_2013$GradoFix,na.rm = TRUE )
+totale_2013 %>% filter(mese=='11') %>% replace_na(list(GradoFix=mediana)) -> novembre_2013
+
+# dicembre 
+totale_2013 %>% filter(mese=='12') -> dicembre_2013
+mediana <- median(dicembre_2013$GradoFix,na.rm = TRUE )
+totale_2013 %>% filter(mese=='12') %>% replace_na(list(GradoFix=mediana)) -> dicembre_2013
+
+totale_2013<- do.call("rbind", list(gennaio_2013, febbraio_2013, marzo_2013, aprile_2013, maggio_2013, giugno_2013,luglio_2013, agosto_2013, settembre_2013, ottobre_2013, novembre_2013, dicembre_2013))
+
+totale_2013 <- totale_2013[-c(9)]
+
+nrow(totale_2013)
+
+# 2014
+temperature %>% filter(Anno=="2014") -> temperature_2014
+totale %>% filter(anno=="2014") -> totale_2014
+
+nrow(totale_2014)
+temperature_2014$Giorno <-  as.character(temperature_2014$Giorno)
+temperature_2014$Mese <-  as.character(temperature_2014$Mese)
+
+temperature_2014 %>% mutate(Giorno = if_else(Giorno %in% v, paste0("0",Giorno), Giorno)) -> temperature_2014
+temperature_2014 %>% mutate(Mese = if_else(Mese %in% v, paste0("0",Mese), Mese)) -> temperature_2014
+
+temperature_2014$OraFix <-  as.character(temperature_2014$OraFix)
+temperature_2014 %>% mutate(OraFix = paste0(OraFix,":00")) -> temperature_2014
+
+
+totale_2014 <- left_join(totale_2014, temperature_2014, by = c("giorno" = "Giorno", "mese" = "Mese", "ora" = "OraFix"))
+nrow(totale_2014)
+
+totale_2014 <- unique(totale_2014)
+
+# gennaio
+totale_2014 %>% filter(mese=='01') -> gennaio_2014
+mediana <- median(gennaio_2014$GradoFix,na.rm = TRUE )
+totale_2014 %>% filter(mese=='01') %>% replace_na(list(GradoFix=mediana)) -> gennaio_2014
+
+# febbraio 
+totale_2014 %>% filter(mese=='02') -> febbraio_2014
+mediana <- median(febbraio_2014$GradoFix,na.rm = TRUE )
+totale_2014 %>% filter(mese=='02') %>% replace_na(list(GradoFix=mediana)) -> febbraio_2014
+
+# marzo 
+totale_2014 %>% filter(mese=='03') -> marzo_2014
+mediana <- median(marzo_2014$GradoFix,na.rm = TRUE )
+totale_2014 %>% filter(mese=='03') %>% replace_na(list(GradoFix=mediana)) -> marzo_2014
+
+# aprile 
+totale_2014 %>% filter(mese=='04') -> aprile_2014
+mediana <- median(aprile_2014$GradoFix,na.rm = TRUE )
+totale_2014 %>% filter(mese=='04') %>% replace_na(list(GradoFix=mediana)) -> aprile_2014
+
+# maggio 
+totale_2014 %>% filter(mese=='05') -> maggio_2014
+mediana <- median(maggio_2014$GradoFix,na.rm = TRUE )
+totale_2014 %>% filter(mese=='05') %>% replace_na(list(GradoFix=mediana)) -> maggio_2014
+
+# giugno 
+totale_2014 %>% filter(mese=='06') -> giugno_2014
+mediana <- median(giugno_2014$GradoFix,na.rm = TRUE )
+totale_2014 %>% filter(mese=='06') %>% replace_na(list(GradoFix=mediana)) -> giugno_2014
+
+# luglio 
+totale_2014 %>% filter(mese=='07') -> luglio_2014
+mediana <- median(luglio_2014$GradoFix,na.rm = TRUE )
+totale_2014 %>% filter(mese=='07') %>% replace_na(list(GradoFix=mediana)) -> luglio_2014
+
+# agosto 
+totale_2014 %>% filter(mese=='08') -> agosto_2014
+mediana <- median(agosto_2014$GradoFix,na.rm = TRUE )
+totale_2014 %>% filter(mese=='08') %>% replace_na(list(GradoFix=mediana)) -> agosto_2014
+
+# settembre 
+totale_2014 %>% filter(mese=='09') -> settembre_2014
+mediana <- median(settembre_2014$GradoFix,na.rm = TRUE )
+totale_2014 %>% filter(mese=='09') %>% replace_na(list(GradoFix=mediana)) -> settembre_2014
+
+# ottobre 
+totale_2014 %>% filter(mese=='10') -> ottobre_2014
+mediana <- median(ottobre_2014$GradoFix,na.rm = TRUE )
+totale_2014 %>% filter(mese=='10') %>% replace_na(list(GradoFix=mediana)) -> ottobre_2014
+
+# novembre 
+totale_2014 %>% filter(mese=='11') -> novembre_2014
+mediana <- median(novembre_2014$GradoFix,na.rm = TRUE )
+totale_2014 %>% filter(mese=='11') %>% replace_na(list(GradoFix=mediana)) -> novembre_2014
+
+# dicembre 
+totale_2014 %>% filter(mese=='12') -> dicembre_2014
+mediana <- median(dicembre_2014$GradoFix,na.rm = TRUE )
+totale_2014 %>% filter(mese=='12') %>% replace_na(list(GradoFix=mediana)) -> dicembre_2014
+
+totale_2014<- do.call("rbind", list(gennaio_2014, febbraio_2014, marzo_2014, aprile_2014, maggio_2014, giugno_2014,luglio_2014, agosto_2014, settembre_2014, ottobre_2014, novembre_2014, dicembre_2014))
+
+totale_2014 <- totale_2014[-c(9)]
+
+nrow(totale_2014)
+
+# 2015
+
+temperature %>% filter(Anno=="2015") -> temperature_2015
+totale %>% filter(anno=="2015") -> totale_2015
+
+nrow(totale_2015)
+temperature_2015$Giorno <-  as.character(temperature_2015$Giorno)
+temperature_2015$Mese <-  as.character(temperature_2015$Mese)
+
+temperature_2015 %>% mutate(Giorno = if_else(Giorno %in% v, paste0("0",Giorno), Giorno)) -> temperature_2015
+temperature_2015 %>% mutate(Mese = if_else(Mese %in% v, paste0("0",Mese), Mese)) -> temperature_2015
+
+temperature_2015$OraFix <-  as.character(temperature_2015$OraFix)
+temperature_2015 %>% mutate(OraFix = paste0(OraFix,":00")) -> temperature_2015
+
+
+totale_2015 <- left_join(totale_2015, temperature_2015, by = c("giorno" = "Giorno", "mese" = "Mese", "ora" = "OraFix"))
+nrow(totale_2015)
+
+totale_2015 <- unique(totale_2015)
+tail(totale_2015)
+# gennaio
+totale_2015 %>% filter(mese=='01') -> gennaio_2015
+mediana <- median(gennaio_2015$GradoFix,na.rm = TRUE )
+totale_2015 %>% filter(mese=='01') %>% replace_na(list(GradoFix=mediana)) -> gennaio_2015
+
+# febbraio 
+totale_2015 %>% filter(mese=='02') -> febbraio_2015
+mediana <- median(febbraio_2015$GradoFix,na.rm = TRUE )
+totale_2015 %>% filter(mese=='02') %>% replace_na(list(GradoFix=mediana)) -> febbraio_2015
+
+# marzo 
+totale_2015 %>% filter(mese=='03') -> marzo_2015
+mediana <- median(marzo_2015$GradoFix,na.rm = TRUE )
+totale_2015 %>% filter(mese=='03') %>% replace_na(list(GradoFix=mediana)) -> marzo_2015
+
+# aprile 
+totale_2015 %>% filter(mese=='04') -> aprile_2015
+mediana <- median(aprile_2015$GradoFix,na.rm = TRUE )
+totale_2015 %>% filter(mese=='04') %>% replace_na(list(GradoFix=mediana)) -> aprile_2015
+
+# maggio 
+totale_2015 %>% filter(mese=='05') -> maggio_2015
+mediana <- median(maggio_2015$GradoFix,na.rm = TRUE )
+totale_2015 %>% filter(mese=='05') %>% replace_na(list(GradoFix=mediana)) -> maggio_2015
+
+# giugno 
+totale_2015 %>% filter(mese=='06') -> giugno_2015
+mediana <- median(giugno_2015$GradoFix,na.rm = TRUE )
+totale_2015 %>% filter(mese=='06') %>% replace_na(list(GradoFix=mediana)) -> giugno_2015
+
+# luglio 
+totale_2015 %>% filter(mese=='07') -> luglio_2015
+mediana <- median(luglio_2015$GradoFix,na.rm = TRUE )
+totale_2015 %>% filter(mese=='07') %>% replace_na(list(GradoFix=mediana)) -> luglio_2015
+
+# agosto 
+totale_2015 %>% filter(mese=='08') -> agosto_2015
+mediana <- median(agosto_2015$GradoFix,na.rm = TRUE )
+totale_2015 %>% filter(mese=='08') %>% replace_na(list(GradoFix=mediana)) -> agosto_2015
+
+# settembre 
+totale_2015 %>% filter(mese=='09') -> settembre_2015
+mediana <- median(settembre_2015$GradoFix,na.rm = TRUE )
+totale_2015 %>% filter(mese=='09') %>% replace_na(list(GradoFix=mediana)) -> settembre_2015
+
+# ottobre 
+totale_2015 %>% filter(mese=='10') -> ottobre_2015
+mediana <- median(ottobre_2015$GradoFix,na.rm = TRUE )
+totale_2015 %>% filter(mese=='10') %>% replace_na(list(GradoFix=mediana)) -> ottobre_2015
+
+# novembre 
+totale_2015 %>% filter(mese=='11') -> novembre_2015
+mediana <- median(novembre_2015$GradoFix,na.rm = TRUE )
+totale_2015 %>% filter(mese=='11') %>% replace_na(list(GradoFix=mediana)) -> novembre_2015
+
+# dicembre 
+totale_2015 %>% filter(mese=='12') -> dicembre_2015
+mediana <- median(dicembre_2015$GradoFix,na.rm = TRUE )
+totale_2015 %>% filter(mese=='12') %>% replace_na(list(GradoFix=mediana)) -> dicembre_2015
+
+totale_2015<- do.call("rbind", list(gennaio_2015, febbraio_2015, marzo_2015, aprile_2015, maggio_2015, giugno_2015,luglio_2015, agosto_2015, settembre_2015, ottobre_2015, novembre_2015, dicembre_2015))
+
+totale_2015 <- totale_2015[-c(9)]
+
+nrow(totale_2015)
+
+totale <- do.call("rbind", list(totale_2012,totale_2013, totale_2014, totale_2015))
+
+
+########################################
 ######### CONSUMI ######################
 ########################################
 try <- ts(totale$consumo, frequency = 8760, start = c(2012, 1))
@@ -316,12 +670,9 @@ firstHour <- 24*(as.Date("2016-01-01 00:00:00")-as.Date("2012-01-01 00:00:00"))
 tt <- ts(totale$consumo,start=c(2012, 01:00:00 ),frequency=24*365)
 autoplot(tt)
 
-?naive
-
 naive(try)
 naive(try2)
 rwf(try , h=10, drift=TRUE)
-# Set training data from 1992 to 2007
 
 # Plot some forecasts
 autoplot(try) +
@@ -353,22 +704,24 @@ checkresiduals(try)
 autoplot(datalist$consumi) +
   ylab("% change") + xlab("Year")
 
+#############################################
+######### temp in serie storica #############
+#############################################
 
+try3 <- ts(totale$GradoFix, frequency = 8760, start = c(2012, 1))
+autoplot(try3)
 #############################################
 ######COME METTERE IN REGRESSIONE DATI#######
 #############################################
-
-
 tot <- cbind(try,try2)
+tot <- cbind(tot,try3)
 tot
-autoplot(tot[,c("try", "try2")]) +
-  ylab("% change") + xlab("Year")
-datalist
 
 tot %>% as.data.frame() -> totdata
 
 colnames(tot)[1] <- "Consumi"
 colnames(tot)[2] <- "Prezzi"
+colnames(tot)[3] <- "Gradi"
 
 ########################################
 ##PREPARATO LE VARIAZIONI PERCENTUALI###
@@ -393,43 +746,53 @@ prezziperc <- percentuali(totdata,2)
 prezziperc <- data.frame(matrix(unlist(prezziperc), nrow=35064, byrow=T),stringsAsFactors=FALSE)
 
 
+
 consumitsperc <- ts(consumiperc, frequency = 8760, start = c(2012, 1))
 prezzitsperc <- ts(prezziperc, frequency = 8760, start = c(2012, 1))
+
 
 tot <- cbind(tot, consumitsperc)
 tot <- cbind(tot, prezzitsperc)
 
-tot 
-
-totdata <- cbind(totdata,consumiperc)
-colnames(totdata)[1] <- "Consumi"
-colnames(totdata)[2] <- "Prezzi"
-colnames(totdata)[3] <- "Consumiperc"
-totdata <- cbind(totdata,prezziperc)
-colnames(totdata)[4] <- "Prezzoperc"
-
-totdata
-
-totdata %>%
-  as.data.frame() %>%
-  ggplot(aes(x=Consumiperc, y=Prezzoperc)) +
-  ylab("Consume") +
-  xlab("Price") +
-  geom_point() +
-  geom_smooth(method="lm", se=FALSE)
-
-
 colnames(tot)[1] <- "Consumi"
 colnames(tot)[2] <- "Prezzi"
-colnames(tot)[3] <- "consumitsperc"
+colnames(tot)[3] <- "Gradi"
+colnames(tot)[4] <- "Consumiperc"
+colnames(tot)[5] <- "Prezzoperc"
+
+tot 
+
+
+# totdata <- cbind(totdata,consumiperc)
+# totdata <- cbind(totdata,prezziperc)
+# colnames(totdata)[1] <- "Consumi"
+# colnames(totdata)[2] <- "Prezzi"
+# colnames(totdata)[3] <- "Gradi"
+# colnames(totdata)[4] <- "Consumiperc"
+# colnames(totdata)[5] <- "Prezzoperc"
+# 
+# 
+# totdata
+# 
+# totdata %>%
+#   as.data.frame() %>%
+#   ggplot(aes(x=Consumiperc, y=Prezzoperc)) +
+#   ylab("Consume") +
+#   xlab("Price") +
+#   geom_point() +
+#   geom_smooth(method="lm", se=FALSE)
+# 
+# 
+# colnames(tot)[1] <- "Consumi"
+# colnames(tot)[2] <- "Prezzi"
+# colnames(tot)[3] <- "consumitsperc"
 
 
 fit.consMR <- tslm(
-  Consumi ~ Prezzi,
+  Consumi ~ Prezzi + Gradi,
   data=tot)
 summary(fit.consMR)
-
-# appesantisce il tutto
+#appesantisce il tutto
 # checkresiduals(fit.consMR)
 
 # prova <- window(tot)
@@ -438,37 +801,6 @@ summary(fit.consMR)
 # summary(fit.beer)
 
 
-######################################################
-######### WEB SCRAPING ###############################
-######################################################
-if (!("rvest" %in% installed.packages())) {
-  install.packages("rvest")
-}
-if (!("dplyr" %in% installed.packages())) {
-  install.packages("dplyr")
-}
-library(rvest)
-library(dplyr)
-
-# DA 2012-01-01 A 2015-12-31
-
-weatherpage <- "https://www.timeanddate.com/weather/poland/warsaw/historic?month=1&year=2012"
-
-weather <- read_html(weatherpage)
-rvea
-body_nodes <- weather %>% 
-  html_node("body", "//td") %>% 
-  html_children()
-body_nodes[1]
-?rvest
-
-a <- rvest::html_nodes(weather,"tr")
-b <- html_text(a)
-b <- b[-c(1:7)]
-b <- b[-c(46)]
-class(b)
-
-b
 ########################################
 ######### TS TOTALE ####################
 ########################################
