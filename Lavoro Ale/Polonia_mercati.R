@@ -771,6 +771,77 @@ plot(consumoadjusted)
 
 consumoadjusted <- holt(consumoadjusted, h=24)
 
+fit.consMR <- tslm(
+  Consumi ~ Prezzi + Gradi,
+  data=tot)
+summary(fit.consMR)
+
+acf(tot, lag.max=20)  
+
+totsarima <- arima(consumits, order=c(0,1,1))
+
+totsarima <-  Arima(consumits, order=c(0,1,1))
+forecast <- forecast(totsarima, h=24)
+plot(forecast(totsarima, h=24))
+totale_2015
+
+#-- Extract Training Data, Fit the Wrong Model, and Forecast
+tot
+yt<-window(consumits,end=2014.023)
+
+yfit<-Arima(yt,order=c(1,0,1))
+
+yfor<-forecast(yfit)
+library(scales)
+#---Extract the Data for ggplot using funggcast()
+
+funggcast <- function(dn, fcast) { 
+  require(zoo) #needed for the 'as.yearmon()' function
+  
+  en <- max(time(fcast$mean)) #extract the max date used in the forecast
+  
+  #Extract Source and Training Data
+  ds <- as.data.frame(window(dn, end=en))
+  names(ds) <- 'observed'
+  ds$date <- as.Date(time(window(dn, end=en)))
+  
+  #Extract the Fitted Values (need to figure out how to grab confidence intervals)
+  dfit <- as.data.frame(fcast$fitted)
+  dfit$date <- as.Date(time(fcast$fitted))
+  names(dfit)[1] <- 'fitted'
+  
+  ds <- merge(ds, dfit, all.x=T) #Merge fitted values with source and training data
+  
+  #Exract the Forecast values and confidence intervals
+  dfcastn <- as.data.frame(fcast)
+  dfcastn$date <- as.Date(as.yearmon(row.names(dfcastn)))
+  names(dfcastn) <- c('forecast','lo80','hi80','lo95','hi95','date')
+  
+  pd <- merge(ds, dfcastn, all.x=T) #final data.frame for use in ggplot
+  return(pd)
+  
+}
+
+pd<-funggcast(consumits,yfor)
+??funggcast
+p1a<-ggplot(data=totale,aes(x = date.x, y = consumo)) 
+p1a<-p1a+geom_line(col='red')
+p1a<-p1a+geom_line(aes(y=fitted),col='blue')
+
+plot(totsarima)
+predict(consumits,n.ahead = 24)
+futurVal <- forecast.Arima(fitARIMA,h=10, level=c(99.5))
+plot.forecast(totsarima)
+
+?forecast.Arima
+#appesantisce il tutto
+#checkresiduals(fit.consMR)
+
+# prova <- window(tot)
+# 
+# fit.beer <- tslm(prova ~ trend + season)
+# summary(fit.beer)
+
 
 ####################################################
 ############ PROVE KERAS ###########################
@@ -961,19 +1032,6 @@ model %>% fit(X_train, y_train, epochs=10, batch_size=batch_size, verbose=1, shu
 # colnames(tot)[1] <- "Consumi"
 # colnames(tot)[2] <- "Prezzi"
 # colnames(tot)[3] <- "consumitsperc"
-
-
-fit.consMR <- tslm(
-  Consumi ~ Prezzi + Gradi,
-  data=tot)
-summary(fit.consMR)
-#appesantisce il tutto
-# checkresiduals(fit.consMR)
-
-# prova <- window(tot)
-# 
-# fit.beer <- tslm(prova ~ trend + season)
-# summary(fit.beer)
 
 
 ########################################
