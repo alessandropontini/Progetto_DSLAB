@@ -652,15 +652,15 @@ totale <- do.call("rbind", list(totale_2012,totale_2013, totale_2014, totale_201
 ########################################
 ######### CONSUMI ######################
 ########################################
-try <- ts(totale$consumo, frequency = 8760, start = c(2012, 1))
-autoplot(try)
+consumits <- ts(totale$consumo, frequency = 8760, start = c(2012, 1), end=c(2015, 12))
+autoplot(consumits)
 
 ########################################
 ############### PREZZI #################
 ########################################
-try2 <- ts(totale$prezzo, frequency = 8760, start = c(2012, 1))
-autoplot(try2)
-datalist <- list(consumi = try, prezzi = try2)
+prezzi2 <- ts(totale$prezzo, frequency = 8760, start = c(2012, 1), end=c(2015, 12))
+autoplot(prezzi2)
+datalist <- list(consumi = consumits, prezzi = prezzi2)
 
 fit.consMR <- tslm(datalist$consumi ~ datalist$prezzi ,data=datalist)
 summary(fit.consMR)
@@ -670,36 +670,35 @@ firstHour <- 24*(as.Date("2016-01-01 00:00:00")-as.Date("2012-01-01 00:00:00"))
 tt <- ts(totale$consumo,start=c(2012, 01:00:00 ),frequency=24*365)
 autoplot(tt)
 
-naive(try)
-naive(try2)
-rwf(try , h=10, drift=TRUE)
+naive(consumits)
+naive(prezzi2)
+rwf(consumits , h=10, drift=TRUE)
 
 # Plot some forecasts
-autoplot(try) +
-  autolayer(meanf(try, h=8760),
+autoplot(consumits) +
+  autolayer(meanf(consumits, h=8760),
             series="Mean", PI=FALSE) +
-  autolayer(naive(try, h=8760),
+  autolayer(naive(consumits, h=8760),
             series="Naïve", PI=FALSE) +
-  autolayer(snaive(try, h=8760),
+  autolayer(snaive(consumits, h=8760),
             series="Seasonal naïve", PI=FALSE) +
   ggtitle("Forecasts for Elettricity production") +
   xlab("Year") + ylab("Kwatt") +
   guides(colour=guide_legend(title="Forecast"))
 
 
-(lambda <- BoxCox.lambda(try))
+(lambda <- BoxCox.lambda(consumits))
 
-autoplot(BoxCox(try,lambda))
+autoplot(BoxCox(consumits,lambda))
 
-fc <- rwf(try, drift=TRUE, lambda=1, h=, level=80)
-fc2 <- rwf(try, drift=TRUE, lambda=1, h=100, level=80,
+fc <- rwf(consumits, drift=TRUE, lambda=1, h=, level=80)
+fc2 <- rwf(consumits, drift=TRUE, lambda=1, h=100, level=80,
            biasadj=TRUE)
-autoplot(try) +
+autoplot(consumits) +
   autolayer(fc, series="Simple back transformation") +
   autolayer(fc2, series="Bias adjusted", PI=FALSE) +
   guides(colour=guide_legend(title="Forecast"))
 
-checkresiduals(try)
 
 autoplot(datalist$consumi) +
   ylab("% change") + xlab("Year")
@@ -708,13 +707,13 @@ autoplot(datalist$consumi) +
 ######### temp in serie storica #############
 #############################################
 
-try3 <- ts(totale$GradoFix, frequency = 8760, start = c(2012, 1))
-autoplot(try3)
+gradi3 <- ts(totale$GradoFix, frequency = 8760, start = c(2012, 1),end=c(2015, 12))
+autoplot(gradi3)
 #############################################
 ######COME METTERE IN REGRESSIONE DATI#######
 #############################################
-tot <- cbind(try,try2)
-tot <- cbind(tot,try3)
+tot <- cbind(consumits,prezzi2)
+tot <- cbind(tot,gradi3)
 tot
 
 tot %>% as.data.frame() -> totdata
@@ -747,8 +746,8 @@ prezziperc <- data.frame(matrix(unlist(prezziperc), nrow=35064, byrow=T),strings
 
 
 
-consumitsperc <- ts(consumiperc, frequency = 8760, start = c(2012, 1))
-prezzitsperc <- ts(prezziperc, frequency = 8760, start = c(2012, 1))
+consumitsperc <- ts(consumiperc, frequency = 8760, start = c(2012, 1),end=c(2015, 12))
+prezzitsperc <- ts(prezziperc, frequency = 8760, start = c(2012, 1),end=c(2015, 12))
 
 
 tot <- cbind(tot, consumitsperc)
@@ -761,6 +760,182 @@ colnames(tot)[4] <- "Consumiperc"
 colnames(tot)[5] <- "Prezzoperc"
 
 tot 
+anyNA(totale)
+consumoseasonal <- decompose(consumits)
+
+plot(consumoseasonal)
+
+consumoadjusted <- consumits - consumoseasonal$seasonal
+
+plot(consumoadjusted)
+
+consumoadjusted <- holt(consumoadjusted, h=24)
+
+
+####################################################
+############ PROVE KERAS ###########################
+####################################################
+library(reticulate)
+use_condaenv(condaenv = "tf")
+library(keras)
+install.packages("tis")
+library(tis)
+tot
+diffed = diff(tot, differences = 1)
+
+# lag_transform <- function(x, k= 1){
+#   
+#   lagged =  c(rep(NA, k), x[1:(length(x)-k)])
+#   DF = as.data.frame(cbind(lagged, x))
+#   colnames(DF) <- c( paste0('x-', k), 'x')
+#   DF[is.na(DF)] <- 0
+#   return(DF)
+# }
+supervised = lags(tot, -24)
+head(supervised)
+
+N = nrow(supervised)
+n = round(N *0.7, digits = 0)
+train = supervised[1:n, ]
+test  = supervised[(n+1):N,  ]
+
+# Random sample indexes
+train_index <- sample(1:nrow(supervised), 0.8 * nrow(supervised))
+test_index <- setdiff(1:nrow(supervised), train_index)
+
+# Build X_train, y_train, X_test, y_test
+X_train <- supervised[train_index, "Consumi(-24)"]
+y_train <- supervised[train_index, "Prezzi(-24)"]
+
+X_test <- supervised[test_index, "Consumi(-24)"]
+y_test <- supervised[test_index, "Prezzi(-24)"]
+
+
+
+dim(X_train) <- c(length(X_train), 1, 1)
+
+# specify required arguments
+X_shape2 = dim(X_train)[2]
+X_shape3 = dim(X_train)[3]
+batch_size = 1                # must be a common factor of both the train and test samples
+units = 1                     # can adjust this, in model tuninig phase
+
+#=========================================================================================
+
+model <- keras_model_sequential() 
+model%>%
+  layer_lstm(units, batch_input_shape = c(batch_size, X_shape2, X_shape3), stateful= TRUE)%>%
+  layer_dense(units = 1)
+
+model %>% compile(
+  loss = 'mean_squared_error',
+  optimizer = optimizer_adam( lr= 0.02, decay = 1e-6 ),  
+  metrics = c('accuracy')
+)
+
+Epochs = 50   
+
+model %>% fit(X_train, y_train, epochs=10, batch_size=batch_size, verbose=1, shuffle=FALSE) 
+
+# data <- data.matrix(totale[-1])
+# train_data <- data[1:30000,]
+
+# mean <-  apply(train_data, 2, mean)
+# std <-  apply(train_data, 2, sd)
+# data <- scale(train_data, center = mean, scale = std)
+
+# generator <- function(data, lookback, delay, min_index, max_index,
+#                       shuffle = FALSE, batch_size = 128, step = 6) {
+#   if (is.null(max_index))
+#     max_index <- nrow(data) - delay - 1
+#   i <- min_index + lookback
+#   function() {
+#     if (shuffle) {
+#       rows <- sample(c((min_index+lookback):max_index), size = batch_size)
+#     } else {
+#       if (i + batch_size >= max_index)
+#         i <<- min_index + lookback
+#       rows <- c(i:min(i+batch_size-1, max_index))
+#       i <<- i + length(rows)
+#     }
+#     
+#     samples <- array(0, dim = c(length(rows),
+#                                 lookback / step,
+#                                 dim(data)[[-1]]))
+#     targets <- array(0, dim = c(length(rows)))
+#     
+#     for (j in 1:length(rows)) {
+#       indices <- seq(rows[[j]] - lookback, rows[[j]]-1,
+#                      length.out = dim(samples)[[2]])
+#       samples[j,,] <- data[indices,]
+#       targets[[j]] <- data[rows[[j]] + delay,2]
+#     }           
+#     list(samples, targets)
+#   }
+# }
+# 
+# 
+# lookback <- 1440
+# step <- 6
+# delay <- 144
+# batch_size <- 128
+# 
+# train_gen <- generator(
+#   data,
+#   lookback = lookback,
+#   delay = delay,
+#   min_index = 1,
+#   max_index = 30000,
+#   shuffle = TRUE,
+#   step = step, 
+#   batch_size = batch_size
+# )
+# 
+# val_gen = generator(
+#   data,
+#   lookback = lookback,
+#   delay = delay,
+#   min_index = 30001,
+#   max_index = 47652,
+#   step = step,
+#   batch_size = batch_size
+# )
+# 
+# test_gen <- generator(
+#   data,
+#   lookback = lookback,
+#   delay = delay,
+#   min_index = 30001,
+#   max_index = NULL,
+#   step = step,
+#   batch_size = batch_size
+# )
+# 
+# # How many steps to draw from val_gen in order to see the entire validation set
+# val_steps <- (40000 - 30001 - lookback) / batch_size
+# 
+# # How many steps to draw from test_gen in order to see the entire test set
+# test_steps <- (nrow(data) - 40001 - lookback) / batch_size
+# 
+# 
+# model <- keras_model_sequential() %>% 
+#   layer_flatten(input_shape = c(lookback / step, dim(data)[-1])) %>% 
+#   layer_dense(units = 32, activation = "relu") %>% 
+#   layer_dense(units = 1)
+# 
+# model %>% compile(
+#   optimizer = optimizer_rmsprop(),
+#   loss = "mae"
+# )
+# 
+# history <- model %>% fit_generator(
+#   train_gen,
+#   steps_per_epoch = 500,
+#   epochs = 20,
+#   validation_data = val_gen,
+#   validation_steps = val_steps
+# )
+
 
 
 # totdata <- cbind(totdata,consumiperc)
