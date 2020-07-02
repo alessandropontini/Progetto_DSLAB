@@ -652,75 +652,75 @@ totale <- do.call("rbind", list(totale_2012,totale_2013, totale_2014, totale_201
 ########################################
 ######### CONSUMI ######################
 ########################################
-consumits <- ts(totale$consumo, frequency = 8760, start = c(2012, 1), end=c(2015, 12))
-autoplot(consumits)
-
-########################################
-############### PREZZI #################
-########################################
-prezzi2 <- ts(totale$prezzo, frequency = 8760, start = c(2012, 1), end=c(2015, 12))
-autoplot(prezzi2)
-datalist <- list(consumi = consumits, prezzi = prezzi2)
-
-fit.consMR <- tslm(datalist$consumi ~ datalist$prezzi ,data=datalist)
-summary(fit.consMR)
-uschange
-summary(totale)
-firstHour <- 24*(as.Date("2016-01-01 00:00:00")-as.Date("2012-01-01 00:00:00"))
-tt <- ts(totale$consumo,start=c(2012, 01:00:00 ),frequency=24*365)
-autoplot(tt)
-
-naive(consumits)
-naive(prezzi2)
-rwf(consumits , h=10, drift=TRUE)
-
-# Plot some forecasts
-autoplot(consumits) +
-  autolayer(meanf(consumits, h=8760),
-            series="Mean", PI=FALSE) +
-  autolayer(naive(consumits, h=8760),
-            series="Naïve", PI=FALSE) +
-  autolayer(snaive(consumits, h=8760),
-            series="Seasonal naïve", PI=FALSE) +
-  ggtitle("Forecasts for Elettricity production") +
-  xlab("Year") + ylab("Kwatt") +
-  guides(colour=guide_legend(title="Forecast"))
-
-
-(lambda <- BoxCox.lambda(consumits))
-
-autoplot(BoxCox(consumits,lambda))
-
-fc <- rwf(consumits, drift=TRUE, lambda=1, h=, level=80)
-fc2 <- rwf(consumits, drift=TRUE, lambda=1, h=100, level=80,
-           biasadj=TRUE)
-autoplot(consumits) +
-  autolayer(fc, series="Simple back transformation") +
-  autolayer(fc2, series="Bias adjusted", PI=FALSE) +
-  guides(colour=guide_legend(title="Forecast"))
-
-
-autoplot(datalist$consumi) +
-  ylab("% change") + xlab("Year")
+# consumits <- ts(totale$consumo, frequency = 8760, start = c(2012, 1), end=c(2015, 12))
+# autoplot(consumits)
+# 
+# ########################################
+# ############### PREZZI #################
+# ########################################
+# prezzi2 <- ts(totale$prezzo, frequency = 8760, start = c(2012, 1), end=c(2015, 12))
+# autoplot(prezzi2)
+# datalist <- list(consumi = consumits, prezzi = prezzi2)
+# 
+# fit.consMR <- tslm(datalist$consumi ~ datalist$prezzi ,data=datalist)
+# summary(fit.consMR)
+# uschange
+# summary(totale)
+# firstHour <- 24*(as.Date("2016-01-01 00:00:00")-as.Date("2012-01-01 00:00:00"))
+# tt <- ts(totale$consumo,start=c(2012, 01:00:00 ),frequency=24*365)
+# autoplot(tt)
+# 
+# naive(consumits)
+# naive(prezzi2)
+# rwf(consumits , h=10, drift=TRUE)
+# 
+# # Plot some forecasts
+# autoplot(consumits) +
+#   autolayer(meanf(consumits, h=8760),
+#             series="Mean", PI=FALSE) +
+#   autolayer(naive(consumits, h=8760),
+#             series="Naïve", PI=FALSE) +
+#   autolayer(snaive(consumits, h=8760),
+#             series="Seasonal naïve", PI=FALSE) +
+#   ggtitle("Forecasts for Elettricity production") +
+#   xlab("Year") + ylab("Kwatt") +
+#   guides(colour=guide_legend(title="Forecast"))
+# 
+# 
+# (lambda <- BoxCox.lambda(consumits))
+# 
+# autoplot(BoxCox(consumits,lambda))
+# 
+# fc <- rwf(consumits, drift=TRUE, lambda=1, h=, level=80)
+# fc2 <- rwf(consumits, drift=TRUE, lambda=1, h=100, level=80,
+#            biasadj=TRUE)
+# autoplot(consumits) +
+#   autolayer(fc, series="Simple back transformation") +
+#   autolayer(fc2, series="Bias adjusted", PI=FALSE) +
+#   guides(colour=guide_legend(title="Forecast"))
+# 
+# 
+# autoplot(datalist$consumi) +
+#   ylab("% change") + xlab("Year")
 
 #############################################
 ######### temp in serie storica #############
 #############################################
 
-gradi3 <- ts(totale$GradoFix, frequency = 8760, start = c(2012, 1),end=c(2015, 12))
-autoplot(gradi3)
-#############################################
-######COME METTERE IN REGRESSIONE DATI#######
-#############################################
-tot <- cbind(consumits,prezzi2)
-tot <- cbind(tot,gradi3)
-tot
-
-tot %>% as.data.frame() -> totdata
-
-colnames(tot)[1] <- "Consumi"
-colnames(tot)[2] <- "Prezzi"
-colnames(tot)[3] <- "Gradi"
+# gradi3 <- ts(totale$GradoFix, frequency = 8760, start = c(2012, 1),end=c(2015, 12))
+# autoplot(gradi3)
+# #############################################
+# ######COME METTERE IN REGRESSIONE DATI#######
+# #############################################
+# tot <- cbind(consumits,prezzi2)
+# tot <- cbind(tot,gradi3)
+# tot
+# 
+# tot %>% as.data.frame() -> totdata
+# 
+# colnames(tot)[1] <- "Consumi"
+# colnames(tot)[2] <- "Prezzi"
+# colnames(tot)[3] <- "Gradi"
 
 ########################################
 ##PREPARATO LE VARIAZIONI PERCENTUALI###
@@ -759,98 +759,92 @@ colnames(tot)[3] <- "Gradi"
 colnames(tot)[4] <- "Consumiperc"
 colnames(tot)[5] <- "Prezzoperc"
 
-tot 
-anyNA(totale)
-consumoseasonal <- decompose(consumits)
-
-plot(consumoseasonal)
-
-consumoadjusted <- consumits - consumoseasonal$seasonal
-
-plot(consumoadjusted)
-
-consumoadjusted <- holt(consumoadjusted, h=24)
-
-fit.consMR <- tslm(
-  Consumi ~ Prezzi + Gradi,
-  data=tot)
-summary(fit.consMR)
-
-acf(tot, lag.max=20)  
-
-totsarima <- arima(consumits, order=c(0,1,1))
-
-totsarima <-  Arima(consumits, order=c(0,1,1))
-forecast <- forecast(totsarima, h=24)
-plot(forecast(totsarima, h=24))
-totale_2015
-
-#-- Extract Training Data, Fit the Wrong Model, and Forecast
-tot
-yt<-window(consumits,end=2014.023)
-
-yfit<-Arima(yt,order=c(1,0,1))
-
-yfor<-forecast(yfit)
-library(scales)
-#---Extract the Data for ggplot using funggcast()
-
-funggcast <- function(dn, fcast) { 
-  require(zoo) #needed for the 'as.yearmon()' function
-  
-  en <- max(time(fcast$mean)) #extract the max date used in the forecast
-  
-  #Extract Source and Training Data
-  ds <- as.data.frame(window(dn, end=en))
-  names(ds) <- 'observed'
-  ds$date <- as.Date(time(window(dn, end=en)))
-  
-  #Extract the Fitted Values (need to figure out how to grab confidence intervals)
-  dfit <- as.data.frame(fcast$fitted)
-  dfit$date <- as.Date(time(fcast$fitted))
-  names(dfit)[1] <- 'fitted'
-  
-  ds <- merge(ds, dfit, all.x=T) #Merge fitted values with source and training data
-  
-  #Exract the Forecast values and confidence intervals
-  dfcastn <- as.data.frame(fcast)
-  dfcastn$date <- as.Date(as.yearmon(row.names(dfcastn)))
-  names(dfcastn) <- c('forecast','lo80','hi80','lo95','hi95','date')
-  
-  pd <- merge(ds, dfcastn, all.x=T) #final data.frame for use in ggplot
-  return(pd)
-  
-}
-
-pd<-funggcast(consumits,yfor)
-??funggcast
-p1a<-ggplot(data=totale,aes(x = date.x, y = consumo)) 
-p1a<-p1a+geom_line(col='red')
-p1a<-p1a+geom_line(aes(y=fitted),col='blue')
-
-plot(totsarima)
-predict(consumits,n.ahead = 24)
-futurVal <- forecast.Arima(fitARIMA,h=10, level=c(99.5))
-
-library(lubridate)
-
-
-int <- interval(ymd("2012-01-01"), ymd("2015-12-31"))
-
-time_length(int, unit = "hour")
-
-z <- zooreg(totale, start = as.Date("2012-01-01"), end=as.Date("2015-12-31"))
-
-zz <- z[format(time(z), "%m %d") != "02 29"]
-
-TS <- ts(coredata(zz), freq = 8760, start = as.Date("2012-01-01"), end=as.Date("2015-12-31"))
-#d <- decompose(TS)
-
-
-
-totale
-
-class(totale$dateTime.x)
+# tot 
+# anyNA(totale)
+# consumoseasonal <- decompose(consumits)
+# 
+# plot(consumoseasonal)
+# 
+# consumoadjusted <- consumits - consumoseasonal$seasonal
+# 
+# plot(consumoadjusted)
+# 
+# consumoadjusted <- holt(consumoadjusted, h=24)
+# 
+# fit.consMR <- tslm(
+#   Consumi ~ Prezzi + Gradi,
+#   data=tot)
+# summary(fit.consMR)
+# 
+# acf(tot, lag.max=20)  
+# 
+# totsarima <- arima(consumits, order=c(0,1,1))
+# 
+# totsarima <-  Arima(consumits, order=c(0,1,1))
+# forecast <- forecast(totsarima, h=24)
+# plot(forecast(totsarima, h=24))
+# totale_2015
+# 
+# #-- Extract Training Data, Fit the Wrong Model, and Forecast
+# tot
+# yt<-window(consumits,end=2014.023)
+# 
+# yfit<-Arima(yt,order=c(1,0,1))
+# 
+# yfor<-forecast(yfit)
+# library(scales)
+# #---Extract the Data for ggplot using funggcast()
+# 
+# funggcast <- function(dn, fcast) { 
+#   require(zoo) #needed for the 'as.yearmon()' function
+#   
+#   en <- max(time(fcast$mean)) #extract the max date used in the forecast
+#   
+#   #Extract Source and Training Data
+#   ds <- as.data.frame(window(dn, end=en))
+#   names(ds) <- 'observed'
+#   ds$date <- as.Date(time(window(dn, end=en)))
+#   
+#   #Extract the Fitted Values (need to figure out how to grab confidence intervals)
+#   dfit <- as.data.frame(fcast$fitted)
+#   dfit$date <- as.Date(time(fcast$fitted))
+#   names(dfit)[1] <- 'fitted'
+#   
+#   ds <- merge(ds, dfit, all.x=T) #Merge fitted values with source and training data
+#   
+#   #Exract the Forecast values and confidence intervals
+#   dfcastn <- as.data.frame(fcast)
+#   dfcastn$date <- as.Date(as.yearmon(row.names(dfcastn)))
+#   names(dfcastn) <- c('forecast','lo80','hi80','lo95','hi95','date')
+#   
+#   pd <- merge(ds, dfcastn, all.x=T) #final data.frame for use in ggplot
+#   return(pd)
+#   
+# }
+# 
+# pd<-funggcast(consumits,yfor)
+# ??funggcast
+# p1a<-ggplot(data=totale,aes(x = date.x, y = consumo)) 
+# p1a<-p1a+geom_line(col='red')
+# p1a<-p1a+geom_line(aes(y=fitted),col='blue')
+# 
+# plot(totsarima)
+# predict(consumits,n.ahead = 24)
+# futurVal <- forecast.Arima(fitARIMA,h=10, level=c(99.5))
+# 
+# library(lubridate)
+# 
+# 
+# int <- interval(ymd("2012-01-01"), ymd("2015-12-31"))
+# 
+# time_length(int, unit = "hour")
+# 
+# z <- zooreg(totale, start = as.Date("2012-01-01"), end=as.Date("2015-12-31"))
+# 
+# zz <- z[format(time(z), "%m %d") != "02 29"]
+# 
+# TS <- ts(coredata(zz), freq = 8760, start = as.Date("2012-01-01"), end=as.Date("2015-12-31"))
+# #d <- decompose(TS)
 
 library(zoo)
 
@@ -862,7 +856,7 @@ hourly_tsprezzo <- zoo(
 
 hourly_tsprezzo <- hourly_tsprezzo[format(time(hourly_tsprezzo), "%m %d") != "02 29"]
 
-TS1 <- ts(coredata(hourly_tsprezzo), freq = 24, start = c(2012,1,1), end=c(2015,12,31))
+TS1 <- ts(coredata(hourly_tsprezzo), freq = 8760, start = c(2012,1,1),  end = c(2015,8760))
 
 
 
@@ -874,7 +868,7 @@ hourly_tsconsumi <- zoo(
 
 hourly_tsconsumi  <- hourly_tsconsumi[format(time(hourly_tsconsumi), "%m %d") != "02 29"]
 
-TS2 <- ts(coredata(hourly_tsprezzo), freq = 24, start = c(2012,1,1), end=c(2015,12,31))
+TS2 <- ts(coredata(hourly_tsconsumi), freq = 8760, start = c(2012,1,1), end = c(2015,8760))
 
 TSTOT <- ts.union(TS1,TS2)
 
@@ -887,29 +881,54 @@ percentuali <- function(x,y){
   risultato[[1]] <- 0
   k <- x[1,y]
   
-  for (i in 2:35064) {
+  for (i in 2:nrow(x)){
     risultato[[i]] <- ((x[i,y]-k)*100)/k
     k <- x[i,y]
   }
   return(risultato)
 }
 
-nrow(TSTOT)
 consumiperc <- percentuali(TSTOT,1)
-consumiperc <- data.frame(matrix(unlist(consumiperc), nrow=35064, byrow=T),stringsAsFactors=FALSE)
+
+#consumiperc <- data.frame(matrix(unlist(consumiperc), nrow=nrow(consumiperc), byrow=T),stringsAsFactors=FALSE)
+consumiperc <- ts(matrix(unlist(t(consumiperc)),ncol=1,byrow=F), frequency = 8760, start = c(2012, 1), end = c(2015,8760))
 
 prezziperc <- percentuali(TSTOT,2)
-prezziperc <- data.frame(matrix(unlist(prezziperc), nrow=35064, byrow=T),stringsAsFactors=FALSE)
+#prezziperc <- data.frame(matrix(unlist(prezziperc), nrow=nrow(prezziperc), byrow=T),stringsAsFactors=FALSE)
+prezziperc <- ts(matrix(unlist(t(prezziperc)),ncol=1,byrow=F), frequency = 8760, start = c(2012, 1), end = c(2015,8760))
 
 
+# 
+# consumitsperc <- ts(consumiperc, frequency = 8760, start = c(2012, 1),end=c(2015, 12))
+# prezzitsperc <- ts(prezziperc, frequency = 8760, start = c(2012, 1),end=c(2015, 12))
+percentuali <- ts.union(consumiperc,prezziperc)
 
-consumitsperc <- ts(consumiperc, frequency = 8760, start = c(2012, 1),end=c(2015, 12))
-prezzitsperc <- ts(prezziperc, frequency = 8760, start = c(2012, 1),end=c(2015, 12))
+TSTOT <- ts.union(TSTOT,percentuali)
+
+hourly_tsgradi <- zoo(
+  x         = c(totale$GradoFix),
+  order.by  = totale$dateTime.x,
+  frequency = 24
+)
+
+hourly_tsgradi <- hourly_tsgradi[format(time(hourly_tsgradi), "%m %d") != "02 29"]
+
+TS3 <- ts(coredata(hourly_tsgradi), freq = 8760, start = c(2012,1,1), end = c(2015,8760))
+TSTOT <- ts.union(TSTOT,TS3)
+autoplot(TSTOT)
 
 
-tot <- cbind(tot, consumitsperc)
-tot <- cbind(tot, prezzitsperc)
-#autoplot(TS)
+TSTOT
+
+colnames(TSTOT)[1] <- "Prezzi"
+colnames(TSTOT)[2] <- "Consumi"
+colnames(TSTOT)[3] <- "Consumiperc"
+colnames(TSTOT)[4] <- "Prezzoperc"
+colnames(TSTOT)[5] <- "Gradi"
+
+
+write.csv(TSTOT, file="/Users/alessandropontini/Desktop/SERIESTORICAPOLONIA.csv")
+
 #appesantisce il tutto
 #checkresiduals(fit.consMR)
 
