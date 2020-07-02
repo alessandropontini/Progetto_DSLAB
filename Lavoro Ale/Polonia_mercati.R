@@ -831,9 +831,85 @@ p1a<-p1a+geom_line(aes(y=fitted),col='blue')
 plot(totsarima)
 predict(consumits,n.ahead = 24)
 futurVal <- forecast.Arima(fitARIMA,h=10, level=c(99.5))
-plot.forecast(totsarima)
 
-?forecast.Arima
+library(lubridate)
+
+
+int <- interval(ymd("2012-01-01"), ymd("2015-12-31"))
+
+time_length(int, unit = "hour")
+
+z <- zooreg(totale, start = as.Date("2012-01-01"), end=as.Date("2015-12-31"))
+
+zz <- z[format(time(z), "%m %d") != "02 29"]
+
+TS <- ts(coredata(zz), freq = 8760, start = as.Date("2012-01-01"), end=as.Date("2015-12-31"))
+#d <- decompose(TS)
+
+
+
+totale
+
+class(totale$dateTime.x)
+
+library(zoo)
+
+hourly_tsprezzo <- zoo(
+  x         = c(totale$prezzo),
+  order.by  = totale$dateTime.x,
+  frequency = 24
+)
+
+hourly_tsprezzo <- hourly_tsprezzo[format(time(hourly_tsprezzo), "%m %d") != "02 29"]
+
+TS1 <- ts(coredata(hourly_tsprezzo), freq = 24, start = c(2012,1,1), end=c(2015,12,31))
+
+
+
+hourly_tsconsumi <- zoo(
+  x         = c(totale$consumo),
+  order.by  = totale$dateTime.x,
+  frequency = 24
+)
+
+hourly_tsconsumi  <- hourly_tsconsumi[format(time(hourly_tsconsumi), "%m %d") != "02 29"]
+
+TS2 <- ts(coredata(hourly_tsprezzo), freq = 24, start = c(2012,1,1), end=c(2015,12,31))
+
+TSTOT <- ts.union(TS1,TS2)
+
+########################################
+##PREPARATO LE VARIAZIONI PERCENTUALI###
+########################################
+percentuali <- function(x,y){
+  
+  risultato <- list()
+  risultato[[1]] <- 0
+  k <- x[1,y]
+  
+  for (i in 2:35064) {
+    risultato[[i]] <- ((x[i,y]-k)*100)/k
+    k <- x[i,y]
+  }
+  return(risultato)
+}
+
+nrow(TSTOT)
+consumiperc <- percentuali(TSTOT,1)
+consumiperc <- data.frame(matrix(unlist(consumiperc), nrow=35064, byrow=T),stringsAsFactors=FALSE)
+
+prezziperc <- percentuali(TSTOT,2)
+prezziperc <- data.frame(matrix(unlist(prezziperc), nrow=35064, byrow=T),stringsAsFactors=FALSE)
+
+
+
+consumitsperc <- ts(consumiperc, frequency = 8760, start = c(2012, 1),end=c(2015, 12))
+prezzitsperc <- ts(prezziperc, frequency = 8760, start = c(2012, 1),end=c(2015, 12))
+
+
+tot <- cbind(tot, consumitsperc)
+tot <- cbind(tot, prezzitsperc)
+#autoplot(TS)
 #appesantisce il tutto
 #checkresiduals(fit.consMR)
 
