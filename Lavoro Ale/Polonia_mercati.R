@@ -846,89 +846,187 @@ colnames(tot)[5] <- "Prezzoperc"
 # TS <- ts(coredata(zz), freq = 8760, start = as.Date("2012-01-01"), end=as.Date("2015-12-31"))
 # #d <- decompose(TS)
 
-library(zoo)
-
-hourly_tsprezzo <- zoo(
-  x         = c(totale$prezzo),
-  order.by  = totale$dateTime.x,
-  frequency = 24
-)
-
-hourly_tsprezzo <- hourly_tsprezzo[format(time(hourly_tsprezzo), "%m %d") != "02 29"]
-
-TS1 <- ts(coredata(hourly_tsprezzo), freq = 8760, start = c(2012,1,1),  end = c(2015,8760))
-
-
-
-hourly_tsconsumi <- zoo(
-  x         = c(totale$consumo),
-  order.by  = totale$dateTime.x,
-  frequency = 24
-)
-
-hourly_tsconsumi  <- hourly_tsconsumi[format(time(hourly_tsconsumi), "%m %d") != "02 29"]
-
-TS2 <- ts(coredata(hourly_tsconsumi), freq = 8760, start = c(2012,1,1), end = c(2015,8760))
-
-TSTOT <- ts.union(TS1,TS2)
-
-########################################
-##PREPARATO LE VARIAZIONI PERCENTUALI###
-########################################
-percentuali <- function(x,y){
-  
-  risultato <- list()
-  risultato[[1]] <- 0
-  k <- x[1,y]
-  
-  for (i in 2:nrow(x)){
-    risultato[[i]] <- ((x[i,y]-k)*100)/k
-    k <- x[i,y]
-  }
-  return(risultato)
-}
-
-consumiperc <- percentuali(TSTOT,1)
-
-#consumiperc <- data.frame(matrix(unlist(consumiperc), nrow=nrow(consumiperc), byrow=T),stringsAsFactors=FALSE)
-consumiperc <- ts(matrix(unlist(t(consumiperc)),ncol=1,byrow=F), frequency = 8760, start = c(2012, 1), end = c(2015,8760))
-
-prezziperc <- percentuali(TSTOT,2)
-#prezziperc <- data.frame(matrix(unlist(prezziperc), nrow=nrow(prezziperc), byrow=T),stringsAsFactors=FALSE)
-prezziperc <- ts(matrix(unlist(t(prezziperc)),ncol=1,byrow=F), frequency = 8760, start = c(2012, 1), end = c(2015,8760))
-
-
+# library(zoo)
 # 
-# consumitsperc <- ts(consumiperc, frequency = 8760, start = c(2012, 1),end=c(2015, 12))
-# prezzitsperc <- ts(prezziperc, frequency = 8760, start = c(2012, 1),end=c(2015, 12))
-percentuali <- ts.union(consumiperc,prezziperc)
+# hourly_tsprezzo <- zoo(
+#   x         = c(totale$prezzo),
+#   order.by  = totale$dateTime.x,
+#   frequency = 24
+# )
+# 
+# hourly_tsprezzo <- hourly_tsprezzo[format(time(hourly_tsprezzo), "%m %d") != "02 29"]
+# 
+# TS1 <- ts(coredata(hourly_tsprezzo), freq = 8760, start = c(2012,1,1),  end = c(2015,8760))
+# 
+# 
+# 
+# hourly_tsconsumi <- zoo(
+#   x         = c(totale$consumo),
+#   order.by  = totale$dateTime.x,
+#   frequency = 24
+# )
+# 
+# hourly_tsconsumi  <- hourly_tsconsumi[format(time(hourly_tsconsumi), "%m %d") != "02 29"]
+# 
+# TS2 <- ts(coredata(hourly_tsconsumi), freq = 8760, start = c(2012,1,1), end = c(2015,8760))
+# 
+# TSTOT <- ts.union(TS1,TS2)
+# 
+# ########################################
+# ##PREPARATO LE VARIAZIONI PERCENTUALI###
+# ########################################
+# percentuali <- function(x,y){
+#   
+#   risultato <- list()
+#   risultato[[1]] <- 0
+#   k <- x[1,y]
+#   
+#   for (i in 2:nrow(x)){
+#     risultato[[i]] <- ((x[i,y]-k)*100)/k
+#     k <- x[i,y]
+#   }
+#   return(risultato)
+# }
+# 
+# consumiperc <- percentuali(TSTOT,1)
+# 
+# #consumiperc <- data.frame(matrix(unlist(consumiperc), nrow=nrow(consumiperc), byrow=T),stringsAsFactors=FALSE)
+# consumiperc <- ts(matrix(unlist(t(consumiperc)),ncol=1,byrow=F), frequency = 8760, start = c(2012, 1), end = c(2015,8760))
+# 
+# prezziperc <- percentuali(TSTOT,2)
+# #prezziperc <- data.frame(matrix(unlist(prezziperc), nrow=nrow(prezziperc), byrow=T),stringsAsFactors=FALSE)
+# prezziperc <- ts(matrix(unlist(t(prezziperc)),ncol=1,byrow=F), frequency = 8760, start = c(2012, 1), end = c(2015,8760))
+# 
+# 
+# # 
+# # consumitsperc <- ts(consumiperc, frequency = 8760, start = c(2012, 1),end=c(2015, 12))
+# # prezzitsperc <- ts(prezziperc, frequency = 8760, start = c(2012, 1),end=c(2015, 12))
+# percentuali <- ts.union(consumiperc,prezziperc)
+# 
+# TSTOT <- ts.union(TSTOT,percentuali)
+# 
+# hourly_tsgradi <- zoo(
+#   x         = c(totale$GradoFix),
+#   order.by  = totale$dateTime.x,
+#   frequency = 24
+# )
+# 
+# hourly_tsgradi2 <- hourly_tsgradi[format(time(hourly_tsgradi), "%m %d") != "02 29"]
+# 
+# TS3 <- ts(coredata(hourly_tsgradi), freq = 8760, start = c(2012,1,1), end = c(2015,8760))
+# TSTOT <- ts.union(TSTOT,TS3)
+# autoplot(TSTOT)
+# 
+# 
+# TSTOT
+# 
+# colnames(TSTOT)[1] <- "Prezzi"
+# colnames(TSTOT)[2] <- "Consumi"
+# colnames(TSTOT)[3] <- "Consumiperc"
+# colnames(TSTOT)[4] <- "Prezzoperc"
+# colnames(TSTOT)[5] <- "Gradi"
 
-TSTOT <- ts.union(TSTOT,percentuali)
 
-hourly_tsgradi <- zoo(
-  x         = c(totale$GradoFix),
-  order.by  = totale$dateTime.x,
-  frequency = 24
-)
+#write.csv(TSTOT, file="/Users/alessandropontini/Desktop/SERIESTORICAPOLONIA.csv")
 
-hourly_tsgradi <- hourly_tsgradi[format(time(hourly_tsgradi), "%m %d") != "02 29"]
+####################################################
+####PROVO AUTO ARIMA E VEDIAMO CHE SUCCEDE##########
+####################################################
+TSTOT2 <- read.csv.zoo("/Users/alessandropontini/Desktop/DATASET TS/SERIESTORICAPOLONIA.csv")
 
-TS3 <- ts(coredata(hourly_tsgradi), freq = 8760, start = c(2012,1,1), end = c(2015,8760))
-TSTOT <- ts.union(TSTOT,TS3)
-autoplot(TSTOT)
+TSTOT <-  ts(coredata(TSTOT2), freq = 8760, start = c(2012,1,1),  end = c(2015,8760))
 
-
+x <- cbind( Consumi=TSTOT[,"Consumi"],
+               ConsumiPerc=TSTOT[,"Consumiperc"],
+               PrezzoPerc=TSTOT[,"Prezzoperc"],
+               Gradi=as.matrix(TSTOT2[,"Gradi"]))
+y <- TSTOT[,"Prezzi"]
 TSTOT
-
-colnames(TSTOT)[1] <- "Prezzi"
-colnames(TSTOT)[2] <- "Consumi"
-colnames(TSTOT)[3] <- "Consumiperc"
-colnames(TSTOT)[4] <- "Prezzoperc"
-colnames(TSTOT)[5] <- "Gradi"
+# NO DIFFED
+fit1 <- auto.arima(y=y, xreg=x, seasonal=FALSE)
+summary(fit1)
 
 
-write.csv(TSTOT, file="/Users/alessandropontini/Desktop/SERIESTORICAPOLONIA.csv")
+fit2 <- auto.arima(y=y, xreg=x, seasonal=FALSE,
+                    stepwise=FALSE, approximation=FALSE)
+summary(fit2)
 
+# DIFFED 24
+
+TSTOTDIFFED <- diff(TSTOT2, lag = 24)
+
+x <- cbind( Consumi=TSTOTDIFFED[,"Consumi"],
+            ConsumiPerc=TSTOTDIFFED[,"Consumiperc"],
+            PrezzoPerc=TSTOTDIFFED[,"Prezzoperc"],
+            Gradi=as.matrix(TSTOTDIFFED[,"Gradi"]))
+y <- TSTOTDIFFED[,"Prezzi"]
+
+fit3 <- auto.arima(y=y, xreg=x, seasonal=FALSE)
+summary(fit3)
+
+
+fit4 <- auto.arima(y=y, xreg=x, seasonal=FALSE,
+                   stepwise=FALSE, approximation=FALSE)
+summary(fit4)
+
+BoxCox(TSTOTDIFFED, lambda = 1)
+
+autoplot(TSTOTDIFFED)
+
+autoplot(TSTOTDIFFED[,c(1,3:5)], facets=FALSE) +
+  xlab("Year") + ylab("") +
+  ggtitle("")
+
+TSTOTDIFFED[,"Prezzi"] %>% ggtsdisplay()
+
+TSTOTDIFFED[,"Prezzi"] %>%
+  Arima(order=c(0,1,1), seasonal=c(0,1,1)) %>%
+  residuals() %>% ggtsdisplay()
+
+fit5 <- TSTOTDIFFED[,"Prezzi"] %>%
+  Arima(order=c(0,1,1), seasonal=c(0,1,1))
+
+checkresiduals(fit5)
+
+fit6 <- Arima(TSTOTDIFFED[,"Prezzi"],seasonal=c(0,1,3))
+checkresiduals(fit6)
+
+fit7 <- auto.arima(TSTOTDIFFED[,"Prezzi"], stationary = TRUE)
+
+checkresiduals(fit7)
+
+autoplot(fit7)
+fit8 <- TSTOTDIFFED[,"Prezzi"] %>%
+  Arima(order=c(3,0,3), seasonal=c(1,1,0))
+
+
+checkresiduals(fit8)
+
+summary(fit8)
+
+
+?auto.arima
+# TEST 
+library(urca)
+TSTOT %>% ur.kpss() %>% summary()
+
+TSTOT %>% diff() %>% ur.kpss() %>% summary()
+
+ndiffs(TSTOT)
+
+TSTOT %>% log() %>% nsdiffs()
+
+TSTOT %>% log() %>% diff(lag=24) %>% ndiffs()
+
+Box.test(diff(TSTOT[,"Prezzi"]), lag=24, type="Ljung-Box")
+
+fit <- auto.arima(TSTOT[,"Prezzi"], seasonal=FALSE)
+summary(fit)
+fit %>% forecast(h=24) %>% autoplot(include=80)
+forecastfit <- fit %>% forecast(h=24)
+?Arima
+fit <- Arima(y, xreg=x, order=c(1,1,0), seasonal=FALSE)
+summary(fit)
 #appesantisce il tutto
 #checkresiduals(fit.consMR)
 
@@ -938,195 +1036,195 @@ write.csv(TSTOT, file="/Users/alessandropontini/Desktop/SERIESTORICAPOLONIA.csv"
 # summary(fit.beer)
 
 
-####################################################
-############ PROVE KERAS ###########################
-####################################################
-library(reticulate)
-use_condaenv(condaenv = "tf")
-library(keras)
-install.packages("tis")
-library(tis)
-tot
-diffed = diff(tot, differences = 1)
-
-# lag_transform <- function(x, k= 1){
-#   
-#   lagged =  c(rep(NA, k), x[1:(length(x)-k)])
-#   DF = as.data.frame(cbind(lagged, x))
-#   colnames(DF) <- c( paste0('x-', k), 'x')
-#   DF[is.na(DF)] <- 0
-#   return(DF)
-# }
-supervised = lags(tot, -24)
-head(supervised)
-
-N = nrow(supervised)
-n = round(N *0.7, digits = 0)
-train = supervised[1:n, ]
-test  = supervised[(n+1):N,  ]
-
-# Random sample indexes
-train_index <- sample(1:nrow(supervised), 0.8 * nrow(supervised))
-test_index <- setdiff(1:nrow(supervised), train_index)
-
-# Build X_train, y_train, X_test, y_test
-X_train <- supervised[train_index, "Consumi(-24)"]
-y_train <- supervised[train_index, "Prezzi(-24)"]
-
-X_test <- supervised[test_index, "Consumi(-24)"]
-y_test <- supervised[test_index, "Prezzi(-24)"]
-
-
-
-dim(X_train) <- c(length(X_train), 1, 1)
-
-# specify required arguments
-X_shape2 = dim(X_train)[2]
-X_shape3 = dim(X_train)[3]
-batch_size = 1                # must be a common factor of both the train and test samples
-units = 1                     # can adjust this, in model tuninig phase
-
-#=========================================================================================
-
-model <- keras_model_sequential() 
-model%>%
-  layer_lstm(units, batch_input_shape = c(batch_size, X_shape2, X_shape3), stateful= TRUE)%>%
-  layer_dense(units = 1)
-
-model %>% compile(
-  loss = 'mean_squared_error',
-  optimizer = optimizer_adam( lr= 0.02, decay = 1e-6 ),  
-  metrics = c('accuracy')
-)
-
-Epochs = 50   
-
-model %>% fit(X_train, y_train, epochs=10, batch_size=batch_size, verbose=1, shuffle=FALSE) 
-
-# data <- data.matrix(totale[-1])
-# train_data <- data[1:30000,]
-
-# mean <-  apply(train_data, 2, mean)
-# std <-  apply(train_data, 2, sd)
-# data <- scale(train_data, center = mean, scale = std)
-
-# generator <- function(data, lookback, delay, min_index, max_index,
-#                       shuffle = FALSE, batch_size = 128, step = 6) {
-#   if (is.null(max_index))
-#     max_index <- nrow(data) - delay - 1
-#   i <- min_index + lookback
-#   function() {
-#     if (shuffle) {
-#       rows <- sample(c((min_index+lookback):max_index), size = batch_size)
-#     } else {
-#       if (i + batch_size >= max_index)
-#         i <<- min_index + lookback
-#       rows <- c(i:min(i+batch_size-1, max_index))
-#       i <<- i + length(rows)
-#     }
-#     
-#     samples <- array(0, dim = c(length(rows),
-#                                 lookback / step,
-#                                 dim(data)[[-1]]))
-#     targets <- array(0, dim = c(length(rows)))
-#     
-#     for (j in 1:length(rows)) {
-#       indices <- seq(rows[[j]] - lookback, rows[[j]]-1,
-#                      length.out = dim(samples)[[2]])
-#       samples[j,,] <- data[indices,]
-#       targets[[j]] <- data[rows[[j]] + delay,2]
-#     }           
-#     list(samples, targets)
-#   }
-# }
+# ####################################################
+# ############ PROVE KERAS ###########################
+# ####################################################
+# library(reticulate)
+# use_condaenv(condaenv = "tf")
+# library(keras)
+# install.packages("tis")
+# library(tis)
+# tot
+# diffed = diff(tot, differences = 1)
+# 
+# # lag_transform <- function(x, k= 1){
+# #   
+# #   lagged =  c(rep(NA, k), x[1:(length(x)-k)])
+# #   DF = as.data.frame(cbind(lagged, x))
+# #   colnames(DF) <- c( paste0('x-', k), 'x')
+# #   DF[is.na(DF)] <- 0
+# #   return(DF)
+# # }
+# supervised = lags(tot, -24)
+# head(supervised)
+# 
+# N = nrow(supervised)
+# n = round(N *0.7, digits = 0)
+# train = supervised[1:n, ]
+# test  = supervised[(n+1):N,  ]
+# 
+# # Random sample indexes
+# train_index <- sample(1:nrow(supervised), 0.8 * nrow(supervised))
+# test_index <- setdiff(1:nrow(supervised), train_index)
+# 
+# # Build X_train, y_train, X_test, y_test
+# X_train <- supervised[train_index, "Consumi(-24)"]
+# y_train <- supervised[train_index, "Prezzi(-24)"]
+# 
+# X_test <- supervised[test_index, "Consumi(-24)"]
+# y_test <- supervised[test_index, "Prezzi(-24)"]
 # 
 # 
-# lookback <- 1440
-# step <- 6
-# delay <- 144
-# batch_size <- 128
 # 
-# train_gen <- generator(
-#   data,
-#   lookback = lookback,
-#   delay = delay,
-#   min_index = 1,
-#   max_index = 30000,
-#   shuffle = TRUE,
-#   step = step, 
-#   batch_size = batch_size
-# )
+# dim(X_train) <- c(length(X_train), 1, 1)
 # 
-# val_gen = generator(
-#   data,
-#   lookback = lookback,
-#   delay = delay,
-#   min_index = 30001,
-#   max_index = 47652,
-#   step = step,
-#   batch_size = batch_size
-# )
+# # specify required arguments
+# X_shape2 = dim(X_train)[2]
+# X_shape3 = dim(X_train)[3]
+# batch_size = 1                # must be a common factor of both the train and test samples
+# units = 1                     # can adjust this, in model tuninig phase
 # 
-# test_gen <- generator(
-#   data,
-#   lookback = lookback,
-#   delay = delay,
-#   min_index = 30001,
-#   max_index = NULL,
-#   step = step,
-#   batch_size = batch_size
-# )
+# #=========================================================================================
 # 
-# # How many steps to draw from val_gen in order to see the entire validation set
-# val_steps <- (40000 - 30001 - lookback) / batch_size
-# 
-# # How many steps to draw from test_gen in order to see the entire test set
-# test_steps <- (nrow(data) - 40001 - lookback) / batch_size
-# 
-# 
-# model <- keras_model_sequential() %>% 
-#   layer_flatten(input_shape = c(lookback / step, dim(data)[-1])) %>% 
-#   layer_dense(units = 32, activation = "relu") %>% 
+# model <- keras_model_sequential() 
+# model%>%
+#   layer_lstm(units, batch_input_shape = c(batch_size, X_shape2, X_shape3), stateful= TRUE)%>%
 #   layer_dense(units = 1)
 # 
 # model %>% compile(
-#   optimizer = optimizer_rmsprop(),
-#   loss = "mae"
+#   loss = 'mean_squared_error',
+#   optimizer = optimizer_adam( lr= 0.02, decay = 1e-6 ),  
+#   metrics = c('accuracy')
 # )
 # 
-# history <- model %>% fit_generator(
-#   train_gen,
-#   steps_per_epoch = 500,
-#   epochs = 20,
-#   validation_data = val_gen,
-#   validation_steps = val_steps
-# )
-
-
-
-# totdata <- cbind(totdata,consumiperc)
-# totdata <- cbind(totdata,prezziperc)
-# colnames(totdata)[1] <- "Consumi"
-# colnames(totdata)[2] <- "Prezzi"
-# colnames(totdata)[3] <- "Gradi"
-# colnames(totdata)[4] <- "Consumiperc"
-# colnames(totdata)[5] <- "Prezzoperc"
+# Epochs = 50   
+# 
+# model %>% fit(X_train, y_train, epochs=10, batch_size=batch_size, verbose=1, shuffle=FALSE) 
+# 
+# # data <- data.matrix(totale[-1])
+# # train_data <- data[1:30000,]
+# 
+# # mean <-  apply(train_data, 2, mean)
+# # std <-  apply(train_data, 2, sd)
+# # data <- scale(train_data, center = mean, scale = std)
+# 
+# # generator <- function(data, lookback, delay, min_index, max_index,
+# #                       shuffle = FALSE, batch_size = 128, step = 6) {
+# #   if (is.null(max_index))
+# #     max_index <- nrow(data) - delay - 1
+# #   i <- min_index + lookback
+# #   function() {
+# #     if (shuffle) {
+# #       rows <- sample(c((min_index+lookback):max_index), size = batch_size)
+# #     } else {
+# #       if (i + batch_size >= max_index)
+# #         i <<- min_index + lookback
+# #       rows <- c(i:min(i+batch_size-1, max_index))
+# #       i <<- i + length(rows)
+# #     }
+# #     
+# #     samples <- array(0, dim = c(length(rows),
+# #                                 lookback / step,
+# #                                 dim(data)[[-1]]))
+# #     targets <- array(0, dim = c(length(rows)))
+# #     
+# #     for (j in 1:length(rows)) {
+# #       indices <- seq(rows[[j]] - lookback, rows[[j]]-1,
+# #                      length.out = dim(samples)[[2]])
+# #       samples[j,,] <- data[indices,]
+# #       targets[[j]] <- data[rows[[j]] + delay,2]
+# #     }           
+# #     list(samples, targets)
+# #   }
+# # }
+# # 
+# # 
+# # lookback <- 1440
+# # step <- 6
+# # delay <- 144
+# # batch_size <- 128
+# # 
+# # train_gen <- generator(
+# #   data,
+# #   lookback = lookback,
+# #   delay = delay,
+# #   min_index = 1,
+# #   max_index = 30000,
+# #   shuffle = TRUE,
+# #   step = step, 
+# #   batch_size = batch_size
+# # )
+# # 
+# # val_gen = generator(
+# #   data,
+# #   lookback = lookback,
+# #   delay = delay,
+# #   min_index = 30001,
+# #   max_index = 47652,
+# #   step = step,
+# #   batch_size = batch_size
+# # )
+# # 
+# # test_gen <- generator(
+# #   data,
+# #   lookback = lookback,
+# #   delay = delay,
+# #   min_index = 30001,
+# #   max_index = NULL,
+# #   step = step,
+# #   batch_size = batch_size
+# # )
+# # 
+# # # How many steps to draw from val_gen in order to see the entire validation set
+# # val_steps <- (40000 - 30001 - lookback) / batch_size
+# # 
+# # # How many steps to draw from test_gen in order to see the entire test set
+# # test_steps <- (nrow(data) - 40001 - lookback) / batch_size
+# # 
+# # 
+# # model <- keras_model_sequential() %>% 
+# #   layer_flatten(input_shape = c(lookback / step, dim(data)[-1])) %>% 
+# #   layer_dense(units = 32, activation = "relu") %>% 
+# #   layer_dense(units = 1)
+# # 
+# # model %>% compile(
+# #   optimizer = optimizer_rmsprop(),
+# #   loss = "mae"
+# # )
+# # 
+# # history <- model %>% fit_generator(
+# #   train_gen,
+# #   steps_per_epoch = 500,
+# #   epochs = 20,
+# #   validation_data = val_gen,
+# #   validation_steps = val_steps
+# # )
 # 
 # 
-# totdata
 # 
-# totdata %>%
-#   as.data.frame() %>%
-#   ggplot(aes(x=Consumiperc, y=Prezzoperc)) +
-#   ylab("Consume") +
-#   xlab("Price") +
-#   geom_point() +
-#   geom_smooth(method="lm", se=FALSE)
-# 
-# 
-# colnames(tot)[1] <- "Consumi"
-# colnames(tot)[2] <- "Prezzi"
-# colnames(tot)[3] <- "consumitsperc"
+# # totdata <- cbind(totdata,consumiperc)
+# # totdata <- cbind(totdata,prezziperc)
+# # colnames(totdata)[1] <- "Consumi"
+# # colnames(totdata)[2] <- "Prezzi"
+# # colnames(totdata)[3] <- "Gradi"
+# # colnames(totdata)[4] <- "Consumiperc"
+# # colnames(totdata)[5] <- "Prezzoperc"
+# # 
+# # 
+# # totdata
+# # 
+# # totdata %>%
+# #   as.data.frame() %>%
+# #   ggplot(aes(x=Consumiperc, y=Prezzoperc)) +
+# #   ylab("Consume") +
+# #   xlab("Price") +
+# #   geom_point() +
+# #   geom_smooth(method="lm", se=FALSE)
+# # 
+# # 
+# # colnames(tot)[1] <- "Consumi"
+# # colnames(tot)[2] <- "Prezzi"
+# # colnames(tot)[3] <- "consumitsperc"
 
 
 ########################################
