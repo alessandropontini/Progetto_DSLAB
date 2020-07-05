@@ -397,7 +397,7 @@ gennaio_consumi <- totale_consumi_ID %>% filter(mese == "01")
 # Grafico totale gennaio
 gennaio_consumi %>% group_by(date, anno, ID) %>%
   ggplot(aes(x = ID , y = consumo, color = anno)) +
-  geom_line()
+  geom_line() 
 
 ###################################################################
 # Prove decomposizione stagionale
@@ -464,9 +464,6 @@ elecdemand<-c(yprezzi, yconsumi)
 
 #ts.plot(yprezzi, yconsumi,
  #       gpars=list(xlab="year", ylab="valori", lty=c(1:3)))
-
-
-# git per modifica e aggiornamento?????
 
 ##################################################################################################
 
