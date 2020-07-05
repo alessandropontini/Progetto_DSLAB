@@ -467,6 +467,517 @@ elecdemand<-c(yprezzi, yconsumi)
 
 ##################################################################################################
 
+#############################################################################
+
+write.csv(df_prezzi, "C:\\Users\\vizzi\\PROG_DSLAB_GITHUB\\Progetto_DSLAB\\Lavoro Toto\\replace\\prezzigiorno.csv")
+
+temp_Scandi<- read.csv("C:\\Users\\vizzi\\PROG_DSLAB_GITHUB\\Progetto_DSLAB\\Lavoro Toto\\finito\\temperature_toto_totale_pulito.csv")
+
+summary(totale)
+summary(temp_Scandi)
+
+# Sistemato#######################################
+df_prezzi_genna<- read.csv("C:\\Users\\vizzi\\PROG_DSLAB_GITHUB\\Progetto_DSLAB\\Lavoro Toto\\replace\\prezzigiorno.csv")
+
+df_prezzi_genna$X <- NULL
+
+# SECONDO LEFT JOIN 
+
+totale2_pulito <- left_join(df_prezzi_genna, df_consumi, by = c("anno" = "anno", "mese" = "mese", "giorno"="giorno", "ora"="ora"))
+totale2_pulito <- totale2_pulito[, -c(9:10)]
+
+df_prezzi_genna$anno <- as.character(df_prezzi_genna$anno)  
+# df_consumi$anno <- as.character(df_consumi$anno)  
+
+df_prezzi_genna$mese <- as.character(df_prezzi_genna$mese)  
+df_prezzi_genna$giorno <- as.character(df_prezzi_genna$giorno)  
+df_prezzi_genna$ora <- as.character(df_prezzi_genna$ora)  
+
+str(df_prezzi_genna)
+str(df_consumi)
+
+
+v = list("1", "2", "3", "4", "5", "6", "7", "8", "9")
+# z = list("0:00:00","1:00:00", "2:00:00", "3:00:00", "4:00:00", "5:00:00", "6:00:00", "7:00:00", "8:00:00", "9:00:00")
+k = list("24:00:00")
+
+df_prezzi_genna %>% mutate(giorno = if_else(giorno %in% v, paste0("0",giorno), giorno)) -> df_prezzi_genna
+df_prezzi_genna %>% mutate(mese = if_else(mese %in% v, paste0("0",mese), mese)) -> df_prezzi_genna
+
+
+temp_Scandi$Mese <- as.character(temp_Scandi$Mese)  
+temp_Scandi$Giorno <- as.character(temp_Scandi$Giorno)  
+temp_Scandi$OraFix5 <- as.character(temp_Scandi$OraFix5) 
+temp_Scandi$Anno <- as.character(temp_Scandi$Anno)  
+
+str(temp_Scandi)
+temp_Scandi %>% mutate(Giorno = if_else(Giorno %in% v, paste0("0",Giorno), Giorno)) -> temp_Scandi
+
+temp_Scandi %>% mutate(Mese = if_else(Mese %in% v, paste0("0",Mese), Mese)) -> temp_Scandi
+
+
+# totale %>% mutate(ora = if_else(ora %in% z, paste0("0",ora), ora)) -> totale
+# df_prezzi_genna %>% mutate(ora = if_else(ora %in% k, "00:00:00", ora)) -> df_prezzi_genna
+# df_consumi %>% mutate(ora = if_else(ora %in% k, "00:00:00", ora)) -> df_prezzi_genna
+
+totale2_pulito %>% mutate(ora = if_else(ora %in% k, "00:00:00", ora)) -> totale2_pulito
+
+totale_prova_temp <- left_join(totale2_pulito, temp_Scandi, by = c("anno" = "Anno", "mese" = "Mese", "giorno"="Giorno", "ora"="OraFix5"))
+
+summary(totale_prova_temp)
+
+
+### 2012
+
+# gennaio
+m = list("01")
+a = list("2012")
+
+totale_prova_temp %>% filter(mese=='01', anno=='2012') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+# febbraio
+m = list("02")
+a = list("2012")
+
+totale_prova_temp %>% filter(mese=='02', anno=='2012') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+# marzo
+m = list("03")
+a = list("2012")
+
+totale_prova_temp %>% filter(mese=='03', anno=='2012') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+# aprile
+m = list("04")
+a = list("2012")
+
+totale_prova_temp %>% filter(mese=='04', anno=='2012') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+# maggio
+m = list("05")
+a = list("2012")
+
+totale_prova_temp %>% filter(mese=='05', anno=='2012') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+
+# giugno
+m = list("06")
+a = list("2012")
+
+totale_prova_temp %>% filter(mese=='06', anno=='2012') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+
+# luglio
+m = list("07")
+a = list("2012")
+
+totale_prova_temp %>% filter(mese=='07', anno=='2012') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+# agosto
+m = list("08")
+a = list("2012")
+
+totale_prova_temp %>% filter(mese=='08', anno=='2012') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+# settembre
+m = list("09")
+a = list("2012")
+
+totale_prova_temp %>% filter(mese=='09', anno=='2012') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+# ottobre
+m = list("10")
+a = list("2012")
+
+totale_prova_temp %>% filter(mese=='10', anno=='2012') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+# novembre
+m = list("11")
+a = list("2012")
+
+totale_prova_temp %>% filter(mese=='11', anno=='2012') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+# dicembre
+m = list("12")
+a = list("2012")
+
+totale_prova_temp %>% filter(mese=='12', anno=='2012') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+### 2013
+
+# gennaio
+m = list("01")
+a = list("2013")
+
+totale_prova_temp %>% filter(mese=='01', anno=='2013') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+# febbraio
+m = list("02")
+a = list("2013")
+
+totale_prova_temp %>% filter(mese=='02', anno=='2013') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+# marzo
+m = list("03")
+a = list("2013")
+
+totale_prova_temp %>% filter(mese=='03', anno=='2013') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+# aprile
+m = list("04")
+a = list("2013")
+
+totale_prova_temp %>% filter(mese=='04', anno=='2013') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+# maggio
+m = list("05")
+a = list("2013")
+
+totale_prova_temp %>% filter(mese=='05', anno=='2013') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+
+# giugno
+m = list("06")
+a = list("2013")
+
+totale_prova_temp %>% filter(mese=='06', anno=='2013') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+
+# luglio
+m = list("07")
+a = list("2013")
+
+totale_prova_temp %>% filter(mese=='07', anno=='2013') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+# agosto
+m = list("08")
+a = list("2013")
+
+totale_prova_temp %>% filter(mese=='08', anno=='2013') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+# settembre
+m = list("09")
+a = list("2013")
+
+totale_prova_temp %>% filter(mese=='09', anno=='2013') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+# ottobre
+m = list("10")
+a = list("2013")
+
+totale_prova_temp %>% filter(mese=='10', anno=='2013') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+# novembre
+m = list("11")
+a = list("2013")
+
+totale_prova_temp %>% filter(mese=='11', anno=='2013') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+# dicembre
+m = list("12")
+a = list("2013")
+
+totale_prova_temp %>% filter(mese=='12', anno=='2013') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+### 2014
+
+# gennaio
+m = list("01")
+a = list("2014")
+
+totale_prova_temp %>% filter(mese=='01', anno=='2014') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+# febbraio
+m = list("02")
+a = list("2014")
+
+totale_prova_temp %>% filter(mese=='02', anno=='2014') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+# marzo
+m = list("03")
+a = list("2014")
+
+totale_prova_temp %>% filter(mese=='03', anno=='2014') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+# aprile
+m = list("04")
+a = list("2014")
+
+totale_prova_temp %>% filter(mese=='04', anno=='2014') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+# maggio
+m = list("05")
+a = list("2014")
+
+totale_prova_temp %>% filter(mese=='05', anno=='2014') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+
+# giugno
+m = list("06")
+a = list("2014")
+
+totale_prova_temp %>% filter(mese=='06', anno=='2014') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+
+# luglio
+m = list("07")
+a = list("2014")
+
+totale_prova_temp %>% filter(mese=='07', anno=='2014') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+# agosto
+m = list("08")
+a = list("2014")
+
+totale_prova_temp %>% filter(mese=='08', anno=='2014') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+# settembre
+m = list("09")
+a = list("2014")
+
+totale_prova_temp %>% filter(mese=='09', anno=='2014') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+# ottobre
+m = list("10")
+a = list("2014")
+
+totale_prova_temp %>% filter(mese=='10', anno=='2014') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+# novembre
+m = list("11")
+a = list("2014")
+
+totale_prova_temp %>% filter(mese=='11', anno=='2014') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+# dicembre
+m = list("12")
+a = list("2014")
+
+totale_prova_temp %>% filter(mese=='12', anno=='2014') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+### 2015
+
+# gennaio
+m = list("01")
+a = list("2015")
+
+totale_prova_temp %>% filter(mese=='01', anno=='2015') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+# febbraio
+m = list("02")
+a = list("2015")
+
+totale_prova_temp %>% filter(mese=='02', anno=='2015') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+# marzo
+m = list("03")
+a = list("2015")
+
+totale_prova_temp %>% filter(mese=='03', anno=='2015') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+# aprile
+m = list("04")
+a = list("2015")
+
+totale_prova_temp %>% filter(mese=='04', anno=='2015') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+# maggio
+m = list("05")
+a = list("2015")
+
+totale_prova_temp %>% filter(mese=='05', anno=='2015') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+
+# giugno
+m = list("06")
+a = list("2015")
+
+totale_prova_temp %>% filter(mese=='06', anno=='2015') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+
+# luglio
+m = list("07")
+a = list("2015")
+
+totale_prova_temp %>% filter(mese=='07', anno=='2015') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix =if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+# agosto
+m = list("08")
+a = list("2015")
+
+totale_prova_temp %>% filter(mese=='08', anno=='2015') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+# settembre
+m = list("09")
+a = list("2015")
+
+totale_prova_temp %>% filter(mese=='09', anno=='2015') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+# ottobre
+m = list("10")
+a = list("2015")
+
+totale_prova_temp %>% filter(mese=='10', anno=='2015') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+# novembre
+m = list("11")
+a = list("2015")
+
+totale_prova_temp %>% filter(mese=='11', anno=='2015') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+# dicembre
+m = list("12")
+a = list("2015")
+
+totale_prova_temp %>% filter(mese=='12', anno=='2015') -> gennaio_2012
+mediana <- median(gennaio_2012$GradoFix, na.rm = TRUE)
+
+totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.na(GradoFix), mediana, GradoFix)) -> totale_prova_temp
+
+
+
+summary(totale_prova_temp)
 
 
 
