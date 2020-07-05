@@ -1081,3 +1081,124 @@ colnames(prova_ts1)[15] <- "PrezzopercUK"
 
 
 write.csv(prova_ts1, "C:\\Users\\vizzi\\PROG_DSLAB_GITHUB\\Progetto_DSLAB\\DATASET SERIE STORICHE\\SerieStorica3Nazioni.csv")
+
+############################################
+
+Dummies_frame_Scandi <- read_excel(paste0(ABSOLUTE_PATH,"\\dummies1215a.xls") , sheet = "NP") 
+
+Dummies_frame_Scandi[rep(seq_len(nrow(Dummies_frame_Scandi)), each = 24), ]-> dummy_scandi2
+
+str(dummy_scandi2)
+
+dummy_scandi2$DayOfWeek <- as.character(dummy_scandi2$DayOfWeek)  
+
+gino = list("1","2", "3", "4" , "5")
+pino= list("6","7")
+
+dummy_scandi2 %>% mutate(DayOfWeek = if_else(DayOfWeek %in% gino, "0", DayOfWeek)) -> dummy_scandi2
+
+dummy_scandi2 %>% mutate(DayOfWeek = if_else(DayOfWeek %in% pino, "1", DayOfWeek)) -> dummy_scandi2
+
+
+dummy_scandi2$Date <- NULL
+dummy_scandi2$DayYear <- NULL
+
+
+dummy_ts_scandi<-  ts(coredata(dummy_scandi2), freq = 8760, start = c(2012,1,1),  end = c(2015,8760))
+
+prova_ts2<-cbind(prova_ts1, dummy_ts_scandi)
+
+
+############################################
+
+Dummies_frame_UK <- read_excel(paste0(ABSOLUTE_PATH,"\\dummies1215a.xls") , sheet = "UKPX") 
+
+Dummies_frame_UK[rep(seq_len(nrow(Dummies_frame_UK)), each = 24), ]-> dummy_uk
+
+str(dummy_uk)
+
+dummy_uk$DayOfWeek <- as.character(dummy_uk$DayOfWeek)  
+
+gino = list("1","2", "3", "4" , "5")
+pino= list("6","7")
+
+dummy_uk %>% mutate(DayOfWeek = if_else(DayOfWeek %in% gino, "0", DayOfWeek)) -> dummy_uk
+
+dummy_uk %>% mutate(DayOfWeek = if_else(DayOfWeek %in% pino, "1", DayOfWeek)) -> dummy_uk
+
+
+dummy_uk$Date <- NULL
+dummy_uk$DayYear <- NULL
+
+
+dummy_ts_uk<-  ts(coredata(dummy_uk), freq = 8760, start = c(2012,1,1),  end = c(2015,8760))
+
+prova_ts2<-cbind(prova_ts2, dummy_ts_uk)
+################################################
+
+############################################
+
+Dummies_frame_Pol <- read_excel(paste0(ABSOLUTE_PATH,"\\dummies1215a.xls") , sheet = "PL") 
+
+Dummies_frame_Pol[rep(seq_len(nrow(Dummies_frame_Pol)), each = 24), ]-> dummy_Pol
+
+str(dummy_Pol)
+
+dummy_Pol$DayOfWeek <- as.character(dummy_Pol$DayOfWeek)  
+
+gino = list("1","2", "3", "4" , "5")
+pino= list("6","7")
+
+dummy_Pol %>% mutate(DayOfWeek = if_else(DayOfWeek %in% gino, "0", DayOfWeek)) -> dummy_Pol
+
+dummy_Pol %>% mutate(DayOfWeek = if_else(DayOfWeek %in% pino, "1", DayOfWeek)) -> dummy_Pol
+
+
+dummy_Pol$Date <- NULL
+dummy_Pol$DayYear <- NULL
+
+
+dummy_ts_Pol<-  ts(coredata(dummy_Pol), freq = 8760, start = c(2012,1,1),  end = c(2015,8760))
+
+prova_ts2<-cbind(prova_ts2, dummy_ts_Pol)
+################################################
+
+colnames(prova_ts2)[1] <- "PrezzoScandi"
+colnames(prova_ts2)[2] <- "ConsumiScandi"
+colnames(prova_ts2)[3] <- "GradiScandi"
+colnames(prova_ts2)[4] <- "ConsumipercScandi"
+colnames(prova_ts2)[5] <- "PrezzopercScandi"
+
+colnames(prova_ts2)[6] <- "PrezzoPol"
+colnames(prova_ts2)[7] <- "ConsumiPol"
+colnames(prova_ts2)[8] <- "ConsumipercPol"
+colnames(prova_ts2)[9] <- "PrezzopercPol"
+colnames(prova_ts2)[10] <- "GradiPol"
+
+colnames(prova_ts2)[11] <- "PrezzoUK"
+colnames(prova_ts2)[12] <- "ConsumiUK"
+colnames(prova_ts2)[13] <- "GradiUK"
+colnames(prova_ts2)[14] <- "ConsumipercUK"
+colnames(prova_ts2)[15] <- "PrezzopercUK"
+################################################################################
+
+
+colnames(prova_ts2)[16] <- "BankHolidayScandi"
+colnames(prova_ts2)[17] <- "EndYearScandi"
+colnames(prova_ts2)[18] <- "DayOfWeekScandi"
+colnames(prova_ts2)[19] <- "DayOffScandi"
+
+
+#########################
+colnames(prova_ts2)[20] <- "BankHolidayUK"
+colnames(prova_ts2)[21] <- "EndYearUK"
+colnames(prova_ts2)[22] <- "DayOfWeekUK"
+colnames(prova_ts2)[23] <- "DayOffUK"
+
+########################################
+
+colnames(prova_ts2)[24] <- "BankHolidayPol"
+colnames(prova_ts2)[25] <- "EndYearPol"
+colnames(prova_ts2)[26] <- "DayOfWeekPol"
+colnames(prova_ts2)[27] <- "DayOffPol"
+
