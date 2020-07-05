@@ -1214,7 +1214,7 @@ write.csv(prova_ts2, "C:\\Users\\vizzi\\PROG_DSLAB_GITHUB\\Progetto_DSLAB\\DATAS
 ###########################################################
 library(forecast)
 
-autoplot(prova_ts2[,c("ConsumiScandi","ConsumiUK", "ConsumiPol")])
+autoplot(prova_ts2[,c("ConsumiScandi","ConsumiUK", "ConsumiPol", "ConsumiITA")])
 
 
 autoplot(prova_ts2[,c("PrezzoScandi","PrezzoUK", "PrezzoPol")])
@@ -1332,5 +1332,118 @@ colnames(prova_ts2)[35] <- "AugustBorderITA"
 colnames(prova_ts2)[36] <- "AugustCenterITA"
 
 
+write.csv(prova_ts2, "C:\\Users\\vizzi\\PROG_DSLAB_GITHUB\\Progetto_DSLAB\\DATASET SERIE STORICHE\\Completissimo.csv")
 
 
+#################################################
+
+x <- cbind( Prezzi=prova_ts2[,"PrezzoScandi"],
+            Gradi=prova_ts2[,"GradiScandi"])
+
+
+y <- prova_ts2[,"ConsumiScandi"]
+
+# NO DIFFED
+fit1 <- auto.arima(y=y, xreg=NULL, seasonal=FALSE)
+summary(fit1)
+
+autoplot(forecast(fit1))
+##################################################
+############################
+##########################################################################
+
+
+
+########################################DA QUA#################################################
+#########################################################################################
+library(zoo)
+df_comp <- read.csv.zoo("C:\\Users\\vizzi\\PROG_DSLAB_GITHUB\\Progetto_DSLAB\\DATASET SERIE STORICHE\\Completissimo.csv")
+
+df_comp<-  ts(coredata(df_comp), freq = 8760, start = c(2012,1,1),  end = c(2015,8760))
+
+autoplot(df_comp[,c("ConsumiScandi","ConsumiUK", "ConsumiPol", "ConsumiITA")])
+
+
+autoplot(df_comp[,c("PrezzoScandi","PrezzoUK", "PrezzoPol", "PrezzoITA")])
+
+
+##################################################################
+
+# OKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK
+
+
+#(fit <- auto.arima(usconsumption[,1],
+ #                  xreg=usconsumption[,2]))
+
+x <- cbind( Prezzi=df_comp[,"PrezzoScandi"],
+            Gradi=df_comp[,"GradiScandi"])
+
+
+y <- df_comp[,"ConsumiScandi"]
+
+# NO DIFFED
+fit1 <- auto.arima(y=y, xreg=NULL, seasonal=FALSE)
+summary(fit1)
+
+autoplot(forecast(fit1))
+
+
+
+
+##################################
+
+
+freq<- outer(1:nrow(df_comp), 1:6) *2* pi / 12
+cs <- cos(freq)
+sn <- sin(freq)
+
+X <- cbind(cs, sn[, 1:5])
+colnames(X) <- c(paste0("cos", 1:6), paste0("sin", 1:5))
+
+matplot(cs[1:12, ], type = "l", main = "Coseni")
+
+
+
+library(forecast)
+
+ly <- (AirPassengers)
+
+autoplot(ly)
+
+###############################################################
+library(ggplot2)
+df_comp[,c("PrezzoScandi")] %>% decompose(type="multiplicative") %>%
+  autoplot() + xlab("Year") +
+  ggtitle("Classical multiplicative decomposition")
+
+#yconsumi %>% decompose(type="multiplicative") %>%
+ # autoplot() + xlab("ID") +
+  # ggtitle("Classical multiplicative decomposition")
+#############################################################
+################NO
+
+fit3 <- auto.arima(df_comp[,c("PrezzoScandi")], seasonal=FALSE, lambda=0,
+                  xreg=fourier(df_comp[,c("PrezzoScandi")], K=c(10,10)))
+fit3 %>%
+  forecast(xreg=fourier(df_comp[,c("PrezzoScandi")], K=c(10,10), h=2*169)) %>%
+  autoplot(include=5*169) +
+  ylab("Call volume") + xlab("Weeks")
+
+
+
+df_comp[,c("PrezzoScandi")]%>% mstl() %>%
+  autoplot() + xlab("Week")
+
+
+df_comp[,c("PrezzoScandi")]%>%  stlf(h=24) %>% window(start=c(2015,12))%>%
+  autoplot() + xlab("Year")
+
+
+df_comp[,c("PrezzoScandi")]%>%  stlf(h=504) -> h
+autoplot(window(h,start=c(2015,12)))
+
+
+
+
+autoplot( window(df_comp[,c("PrezzoScandi")],start=c(2015,12))) + 
+  autolayer(h, PI=TRUE, series="STLF")
