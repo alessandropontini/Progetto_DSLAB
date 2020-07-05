@@ -1440,10 +1440,96 @@ df_comp[,c("PrezzoScandi")]%>%  stlf(h=24) %>% window(start=c(2015,12))%>%
 
 
 df_comp[,c("PrezzoScandi")]%>%  stlf(h=504) -> h
-autoplot(window(h,start=c(2015,12)))
+# autoplot(window(h,start=c(2015,12)))
 
 
 
 
 autoplot( window(df_comp[,c("PrezzoScandi")],start=c(2015,12))) + 
   autolayer(h, PI=TRUE, series="STLF")
+
+
+
+###########################################################
+# Prova forecast
+df_comp[,c("PrezzoScandi")]%>%  forecast(h=504) -> z
+
+
+
+
+autoplot( window(df_comp[,c("PrezzoScandi")],start=c(2015,12))) + 
+autolayer(z, PI=TRUE, series="Forecast")
+
+autoplot( window(df_comp[,c("PrezzoScandi")],start=c(2015,12))) + 
+  autolayer(h, PI=TRUE, series="STLF")
+
+#########################################
+#### Snaive
+
+df_comp[,c("PrezzoScandi")]%>%  snaive(h=504) -> z1
+
+autoplot( window(df_comp[,c("PrezzoScandi")],start=c(2015,12))) + 
+  autolayer(z1, PI=TRUE, series="Snaive")
+
+
+
+#########################################
+
+df_comp[,c("PrezzoScandi")]%>%  meanf(h=504) -> z2
+
+autoplot( window(df_comp[,c("PrezzoScandi")],start=c(2015,12))) + 
+  autolayer(z2, PI=TRUE, series="Meanf")
+
+
+##################################################
+df_comp[,c("PrezzoScandi")]%>%  holt(h=504) -> z3
+
+autoplot( window(df_comp[,c("PrezzoScandi")],start=c(2015,12))) + 
+  autolayer(z3, PI=TRUE, series="Holt")
+
+
+############################################
+
+
+#################Croston     Non parteeeeeeeeeeeee
+df_comp[,c("PrezzoScandi")]%>%  croston(h=504) -> z4
+
+autoplot( window(df_comp[,c("PrezzoScandi")],start=c(2015,12))) + 
+  autolayer(z4, PI=TRUE, series="Croston")
+
+
+
+##########################################
+
+fitzio<- auto.arima(df_comp[,c("PrezzoScandi")], seasonal=FALSE, lambda=0,
+                  xreg=fourier(df_comp[,c("PrezzoScandi")], K=c(0.01,0.1)))
+
+fitzio %>%
+  forecast(xreg=fourier(df_comp[,c("PrezzoScandi")], K=3, h=24)) %>%
+  autoplot(include=7*24) +
+  ylab("Call volume") + xlab("Weeks")
+
+summary(fitzio)
+
+
+####################################################################################
+library(forecast)
+
+df_comp2ms<- read.csv.zoo("C:\\Users\\vizzi\\PROG_DSLAB_GITHUB\\Progetto_DSLAB\\DATASET SERIE STORICHE\\Completissimo.csv")
+
+ts <-  ts(coredata(df_comp2ms), freq = 8760, start = c(2012,1,1),  end = c(2015,8760))
+# ts<- msts(df_comp2ms, c(7*24,365*24)) # multiseasonal ts
+
+y <- msts(ts, c(7*24,365*24)) # multiseasonal ts
+
+fit <- auto.arima(y[,"PrezzoScandi"], seasonal=F, xreg=fourier(y[,"PrezzoScandi"], K=c(2,2)))
+
+
+fit_f <- forecast(fit, xreg= fourier(y[,"PrezzoScandi"], K=c(2,2), h= 24*7), 24*7)
+plot(fit_f)
+
+autoplot( window(df_comp[,c("PrezzoScandi")],start=c(2015,12))) + 
+  autolayer(fit_f, PI=TRUE, series="zio")
+summary(fit)
+
+
