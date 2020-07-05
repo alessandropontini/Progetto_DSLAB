@@ -979,5 +979,56 @@ totale_prova_temp %>% mutate(GradoFix = if_else(anno %in% a & mese %in% m & is.n
 
 summary(totale_prova_temp)
 
+write.csv(totale_prova_temp, "C:\\Users\\vizzi\\PROG_DSLAB_GITHUB\\Progetto_DSLAB\\Lavoro Toto\\dataset_finish\\dataset_finish_totale_prova_temp.csv")
 
 
+########################################################################################
+
+
+percentuali <- function(x,y){
+  
+  risultato <- list()
+  risultato[[1]] <- 0
+  k <- x[1,y]
+  
+  for (i in 2:35068) {
+    risultato[[i]] <- ((x[i,y]-k)*100)/k
+    k <- x[i,y]
+  }
+  return(risultato)
+}
+
+
+
+
+consumiperc <- percentuali(totale_prova_temp,8)
+consumiperc <- data.frame(matrix(unlist(consumiperc), nrow=35068, byrow=T),stringsAsFactors=FALSE)
+
+
+
+prezziperc <- percentuali(totale_prova_temp,5)
+prezziperc <- data.frame(matrix(unlist(prezziperc), nrow=35068, byrow=T),stringsAsFactors=FALSE)
+
+
+
+
+consumitsperc <- ts(consumiperc, frequency = 8760, start = c(2012, 1),end=c(2015, 8760))
+prezzitsperc <- ts(prezziperc, frequency = 8760, start = c(2012, 1),end=c(2015, 8760))
+TSTOT <-  ts(coredata(totale_prova_temp), freq = 8760, start = c(2012,1,1),  end = c(2015,8760))
+
+summary(TSTOT)
+
+tot <- cbind(TSTOT, consumitsperc)
+tot <- cbind(tot, prezzitsperc)
+
+
+
+tot <- tot[,-c(1:4,6:7)]
+
+
+
+colnames(tot)[1] <- "Prezzo"
+colnames(tot)[2] <- "Consumi"
+colnames(tot)[3] <- "Gradi"
+colnames(tot)[4] <- "Consumiperc"
+colnames(tot)[5] <- "Prezzoperc"
