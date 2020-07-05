@@ -1023,6 +1023,8 @@ Box.test(diff(TSTOT[,"Prezzi"]), lag=24, type="Ljung-Box")
 fit <- auto.arima(TSTOT[,"Prezzi"], seasonal=FALSE)
 summary(fit)
 fit %>% forecast(h=24) %>% autoplot(include=80)
+
+?forecast
 forecastfit <- fit %>% forecast(h=24)
 ?Arima
 fit <- Arima(y, xreg=x, order=c(1,1,0), seasonal=FALSE)
