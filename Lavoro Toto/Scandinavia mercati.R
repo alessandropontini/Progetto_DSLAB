@@ -1032,3 +1032,52 @@ colnames(tot)[2] <- "Consumi"
 colnames(tot)[3] <- "Gradi"
 colnames(tot)[4] <- "Consumiperc"
 colnames(tot)[5] <- "Prezzoperc"
+
+write.csv(tot, "C:\\Users\\vizzi\\PROG_DSLAB_GITHUB\\Progetto_DSLAB\\DATASET SERIE STORICHE\\SERIESTORICASCANDINAVIA.csv")
+############################################################################################################################
+
+TSTOT2 <- read.csv.zoo("C:\\Users\\vizzi\\PROG_DSLAB_GITHUB\\Progetto_DSLAB\\DATASET SERIE STORICHE\\SERIESTORICASCANDINAVIA.csv")
+
+TSTOT <-  ts(coredata(TSTOT2), freq = 8760, start = c(2012,1,1),  end = c(2015,8760))
+
+##########################################
+
+
+TSTOT2 <- read.csv.zoo("C:\\Users\\vizzi\\PROG_DSLAB_GITHUB\\Progetto_DSLAB\\DATASET SERIE STORICHE\\SERIESTORICAUK.csv")
+
+TSTOTUK <-  ts(coredata(TSTOT2), freq = 8760, start = c(2012,1,1),  end = c(2015,8760))
+
+###########################################################
+
+TSTOT2 <- read.csv.zoo("C:\\Users\\vizzi\\PROG_DSLAB_GITHUB\\Progetto_DSLAB\\DATASET SERIE STORICHE\\SERIESTORICAPOLONIA.csv")
+
+TSTOTPOL <-  ts(coredata(TSTOT2), freq = 8760, start = c(2012,1,1),  end = c(2015,8760))
+
+#############################
+
+
+ts.union(c(TSTOT, TSTOTUK, TSTOTPOL)) -> prova_ts
+
+cbind(TSTOT, TSTOTPOL, TSTOTUK) -> prova_ts1
+########################################################
+
+colnames(prova_ts1)[1] <- "PrezzoScandi"
+colnames(prova_ts1)[2] <- "ConsumiScandi"
+colnames(prova_ts1)[3] <- "GradiScandi"
+colnames(prova_ts1)[4] <- "ConsumipercScandi"
+colnames(prova_ts1)[5] <- "PrezzopercScandi"
+
+colnames(prova_ts1)[6] <- "PrezzoPol"
+colnames(prova_ts1)[7] <- "ConsumiPol"
+colnames(prova_ts1)[8] <- "ConsumipercPol"
+colnames(prova_ts1)[9] <- "PrezzopercPol"
+colnames(prova_ts1)[10] <- "GradiPol"
+
+colnames(prova_ts1)[11] <- "PrezzoUK"
+colnames(prova_ts1)[12] <- "ConsumiUK"
+colnames(prova_ts1)[13] <- "GradiUK"
+colnames(prova_ts1)[14] <- "ConsumipercUK"
+colnames(prova_ts1)[15] <- "PrezzopercUK"
+
+
+write.csv(prova_ts1, "C:\\Users\\vizzi\\PROG_DSLAB_GITHUB\\Progetto_DSLAB\\DATASET SERIE STORICHE\\SerieStorica3Nazioni.csv")
