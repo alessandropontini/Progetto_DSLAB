@@ -1201,4 +1201,136 @@ colnames(prova_ts2)[24] <- "BankHolidayPol"
 colnames(prova_ts2)[25] <- "EndYearPol"
 colnames(prova_ts2)[26] <- "DayOfWeekPol"
 colnames(prova_ts2)[27] <- "DayOffPol"
+####################################################################################
+
+
+
+write.csv(prova_ts2, "C:\\Users\\vizzi\\PROG_DSLAB_GITHUB\\Progetto_DSLAB\\DATASET SERIE STORICHE\\SerieStorica3NazioniDummy.csv")
+
+
+
+##########################
+##########################################################################
+###########################################################
+library(forecast)
+
+autoplot(prova_ts2[,c("ConsumiScandi","ConsumiUK", "ConsumiPol")])
+
+
+autoplot(prova_ts2[,c("PrezzoScandi","PrezzoUK", "PrezzoPol")])
+
+
+
+
+##################################################################################
+
+# -- R CODE
+# mod1 <- lm(I(log(peso))~I(log(bicipite)),d)
+
+d<-prova_ts2
+#-- R CODE
+mod1 <- lm(PrezzoScandi~ConsumiScandi,d)
+summary(mod1)
+
+mod2<- lm(ConsumiScandi~PrezzoScandi+ GradiScandi,d)
+summary(mod2)
+
+mod3<- lm(ConsumiScandi~PrezzoScandi+ GradiScandi+DayOfWeekScandi,d)
+summary(mod3)
+
+
+mod4<- lm(ConsumiScandi~PrezzoScandi+ GradiScandi+DayOfWeekScandi+ BankHolidayScandi,d)
+summary(mod4)
+
+
+mod5<- lm(ConsumiScandi~PrezzoScandi+ GradiScandi+DayOfWeekScandi+ BankHolidayScandi+EndYearScandi,d)
+summary(mod5)
+
+mod6<- lm(I(log(ConsumiScandi))~PrezzoScandi+ GradiScandi+DayOfWeekScandi+ BankHolidayScandi+EndYearScandi,d)
+summary(mod6)
+
+# mod3 <- lm(I(log(peso))~bicipite,d)
+
+
+mod7<- lm(ConsumiScandi~I(log(PrezzoScandi))+ GradiScandi+DayOfWeekScandi+ BankHolidayScandi+EndYearScandi,d)
+summary(mod7)
+
+
+###################################################################################
+###############################################################################
+##############################################################
+###########################################
+library(zoo)
+
+df_ita <- read.csv.zoo("C:\\Users\\vizzi\\PROG_DSLAB_GITHUB\\Progetto_DSLAB\\DATASET SERIE STORICHE\\ita_finish_totale_prova_temp.csv")
+
+df_ita<-  ts(coredata(df_ita), freq = 8760, start = c(2012,1,1),  end = c(2015,8760))
+
+
+prova_ts2<-cbind(prova_ts2, df_ita)
+
+###########################################
+
+colnames(prova_ts2)[1] <- "PrezzoScandi"
+colnames(prova_ts2)[2] <- "ConsumiScandi"
+colnames(prova_ts2)[3] <- "GradiScandi"
+colnames(prova_ts2)[4] <- "ConsumipercScandi"
+colnames(prova_ts2)[5] <- "PrezzopercScandi"
+
+colnames(prova_ts2)[6] <- "PrezzoPol"
+colnames(prova_ts2)[7] <- "ConsumiPol"
+colnames(prova_ts2)[8] <- "ConsumipercPol"
+colnames(prova_ts2)[9] <- "PrezzopercPol"
+colnames(prova_ts2)[10] <- "GradiPol"
+
+colnames(prova_ts2)[11] <- "PrezzoUK"
+colnames(prova_ts2)[12] <- "ConsumiUK"
+colnames(prova_ts2)[13] <- "GradiUK"
+colnames(prova_ts2)[14] <- "ConsumipercUK"
+colnames(prova_ts2)[15] <- "PrezzopercUK"
+################################################################################
+
+
+colnames(prova_ts2)[16] <- "BankHolidayScandi"
+colnames(prova_ts2)[17] <- "EndYearScandi"
+colnames(prova_ts2)[18] <- "DayOfWeekScandi"
+colnames(prova_ts2)[19] <- "DayOffScandi"
+
+
+#########################
+colnames(prova_ts2)[20] <- "BankHolidayUK"
+colnames(prova_ts2)[21] <- "EndYearUK"
+colnames(prova_ts2)[22] <- "DayOfWeekUK"
+colnames(prova_ts2)[23] <- "DayOffUK"
+
+########################################
+
+colnames(prova_ts2)[24] <- "BankHolidayPol"
+colnames(prova_ts2)[25] <- "EndYearPol"
+colnames(prova_ts2)[26] <- "DayOfWeekPol"
+colnames(prova_ts2)[27] <- "DayOffPol"
+####################################################################################
+
+colnames(prova_ts2)[28] <- "PrezzoITA"
+colnames(prova_ts2)[29] <- "ConsumiITA"
+colnames(prova_ts2)[30] <- "GradiITA"
+colnames(prova_ts2)[31] <- "ConsumipercITA"
+colnames(prova_ts2)[32] <- "PrezzopercITA"
+################################################################################
+
+
+
+
+colnames(prova_ts2)[33] <- "BankHolidayITA"
+colnames(prova_ts2)[34] <- "EndYearITA"
+colnames(prova_ts2)[37] <- "DayOfWeekITA"
+colnames(prova_ts2)[38] <- "DayOffITA"
+################################################################################
+
+
+colnames(prova_ts2)[35] <- "AugustBorderITA"
+colnames(prova_ts2)[36] <- "AugustCenterITA"
+
+
+
 
