@@ -1429,10 +1429,16 @@ fit3 %>%
   autoplot(include=5*169) +
   ylab("Call volume") + xlab("Weeks")
 
-
+library(forecast)
 
 df_comp[,c("PrezzoScandi")]%>% mstl() %>%
-  autoplot() + xlab("Week")
+  autoplot("Deco") + xlab("Year")
+
+df_comp[,c("PrezzoScandi")]%>% mstl() -> x
+
+png("plot3.jpeg",4032,3024, units="px", res=500)
+autoplot(x) + xlab("Anni") + ylab("Prezzi Kilowatt € per Ora della Scandinavia") + ggtitle("Dati dal 2012 al 2015 del Mercato Elettrico")
+dev.off()
 
 
 df_comp[,c("PrezzoScandi")]%>%  stlf(h=24) %>% window(start=c(2015,12))%>%
@@ -1440,15 +1446,26 @@ df_comp[,c("PrezzoScandi")]%>%  stlf(h=24) %>% window(start=c(2015,12))%>%
 
 
 df_comp[,c("PrezzoScandi")]%>%  stlf(h=504) -> h
+
 # autoplot(window(h,start=c(2015,12)))
 
-
-
+png("plot4.jpeg",4032,3024, units="px", res=500)
+autoplot(h) + xlab("Anni") + ylab("Prezzi Kilowatt € per Ora della Scandinavia") + ggtitle("Dati dal 2012 al 2015 del Mercato Elettrico")
+dev.off()
+library(ggplot2)
 
 autoplot( window(df_comp[,c("PrezzoScandi")],start=c(2015,12))) + 
   autolayer(h, PI=TRUE, series="STLF")
 
+# Prova salva stlf funzionante?
 
+png("plot5.jpeg",4032,3024, units="px", res=500)
+autoplot(window(df_comp[,c("PrezzoScandi")],start=c(2015,12))) + 
+  autolayer(h, PI=TRUE, series="STLF") + xlab("Anni") + ylab("Prezzi Kilowatt € per Ora della Scandinavia") + ggtitle("Dati dal 2015 del Mercato Elettrico")
+dev.off()
+
+autoplot( window(df_comp[,c("PrezzoScandi")],start=c(2015,12))) + 
+  autolayer(h, PI=TRUE, series="STLF")
 
 ###########################################################
 # Prova forecast
@@ -1514,6 +1531,30 @@ summary(fitzio)
 
 ####################################################################################
 library(forecast)
+library(zoo)
+
+df_comp2ms<- read.csv.zoo("C:\\Users\\vizzi\\PROG_DSLAB_GITHUB\\Progetto_DSLAB\\DATASET SERIE STORICHE\\Completissimo.csv")
+
+
+
+ts <-  ts(coredata(df_comp2ms), freq = 8760, start = c(2012,1,1),  end = c(2015,8760))
+# ts<- msts(df_comp2ms, c(7*24,365*24)) # multiseasonal ts
+
+y <- msts(ts, c(7*24,365*24)) # multiseasonal ts
+
+fit <- auto.arima(y[,"PrezzoScandi"], seasonal=F, xreg=fourier(y[,"PrezzoScandi"], K=c(1,1)))
+
+
+fit_f <- forecast(fit, xreg= fourier(y[,"PrezzoScandi"], K=c(1,1), h= 24*7), 24*7)
+plot(fit_f)
+
+autoplot( window(df_comp[,c("PrezzoScandi")],start=c(2015,12))) + 
+  autolayer(fit_f, PI=TRUE, series="zio")
+summary(fit)
+
+################################################
+############################
+# PROVA 0607
 
 df_comp2ms<- read.csv.zoo("C:\\Users\\vizzi\\PROG_DSLAB_GITHUB\\Progetto_DSLAB\\DATASET SERIE STORICHE\\Completissimo.csv")
 
@@ -1522,14 +1563,155 @@ ts <-  ts(coredata(df_comp2ms), freq = 8760, start = c(2012,1,1),  end = c(2015,
 
 y <- msts(ts, c(7*24,365*24)) # multiseasonal ts
 
-fit <- auto.arima(y[,"PrezzoScandi"], seasonal=F, xreg=fourier(y[,"PrezzoScandi"], K=c(2,2)))
+# fit <- auto.arima(y[,"PrezzoScandi"], seasonal=FALSE, xreg=fourier(y[,"PrezzoScandi"], K=c(3,30)))
 
 
-fit_f <- forecast(fit, xreg= fourier(y[,"PrezzoScandi"], K=c(2,2), h= 24*7), 24*7)
+fit_f <- forecast(fit, xreg= fourier(y[,"PrezzoScandi"], K=c(3,3), h= 24*7), 24*7)
 plot(fit_f)
 
 autoplot( window(df_comp[,c("PrezzoScandi")],start=c(2015,12))) + 
   autolayer(fit_f, PI=TRUE, series="zio")
 summary(fit)
 
+#######################################
+# Optimization of Fourier pairs based on AICc values
+
+msts_test <- msts(  ts , seasonal.periods =c(24,365))
+
+summary(msts_test)
+
+my_aic_df <- matrix(ncol = 5 , nrow = 10)
+
+
+for(i in 1:5){ 
+  
+  for(j in 1:10){ 
+    
+    fn <- fourier( msts_test , K=  c(i , j) )
+    
+    FourierFit <- auto.arima( msts_test[,"PrezzoScandi"] , seasonal=FALSE,  xreg=fn )
+    
+    my_aic_df[(j),(i+1)] <- FourierFit$aicc
+    
+  }
+}
+
+which(my_aic_df == min(my_aic_df), arr.ind = TRUE)
+
+
+
+
+
+# Prove optimization aic -> da articolo
+
+aic_vals_temp<-NULL
+
+aic_vals <-NULL
+for (i in 1:7)
+  {for (j in 1:7){
+    xreg1<- fourier(ts[,"PrezzoScandi"], i) 
+    xreg2<-fourier(ts[,"PrezzoScandi"], j)
+    xtrain <-cbind(xreg1,xreg2)
+    fitma1<-auto.arima(ts[,"PrezzoScandi"], D=0, max.P=0, max.Q=0, xreg=xtrain)
+    aic_vals_temp <-cbind(i, j, fitma1$aic)
+    aic_vals<- rbind(aic_vals, aic_vals_temp)
+  }
+}
+
+xtrain
+
+colnames(aic_vals)<-c("FourierTerm24", "FourierTerms168", "AICValue")
+aic_val<-data.frame(aic_vals)
+minAICVAl <- min (aic_vals$ICValue)
+minvals <- aic_vals
+
+minvals<-aic_vals[which(aic_vals$AICValue==minAICVal),]
+###################################################################
+
+#####################################################################################################################
+
+# 0607 Pome
+
+ds_ita8 <- read.csv("C:\\Users\\vizzi\\PROG_DSLAB_GITHUB\\Progetto_DSLAB\\DATASET SERIE STORICHE\\italia8mattina.csv")
+
+ds_ita8<-  ts(coredata(ds_ita8), freq = 365, start = c(2012,1,1),  end = c(2015,365))
+ 
+# y <- msts(ts, c(7*24,365*24)) # multiseasonal ts
+
+xi<- ds_ita8[,"TSTOT.ConsumiITA"]
+#############
+x<- fourier(x, K=1)
+
+
+
+
+fit <- auto.arima(ds_ita8[,"TSTOT.ConsumiITA"], seasonal=F, xreg=x)
+summary(fit)
+
+x1<- fourier(xi, K=8)
+x1
+# y= cbind(x,x1)
+
+
+x1[,2]
+
+fit2 <- auto.arima(ds_ita8[,"TSTOT.ConsumiITA"], seasonal=F, trace = TRUE, xreg=x1)
+summary(fit2)
+
+plot(fit2)
+###########################################################################
+x1<- fourier(xi, K=c(1:8))
+x1
+# y= cbind(x,x1)
+
+fit2 <- auto.arima(ds_ita8[,"TSTOT.ConsumiITA"], seasonal=F, xreg=x1)
+summary(fit2)
+
+plot(fit2)
+
+
+
+autoplot(ds_ita8[1095:1460,"TSTOT.ConsumiITA"])
+
+d<-ds_ita8[1095:1460,"TSTOT.ConsumiITA"]
+
+ds8<-  ts(coredata(d), freq = 365, start = c(2015,1,1),  end = c(2015,365))
+
+str(d)
+autoplot(ds8)
+
+######################
+
+x5<- fourier(ds8, K=8)
+x5
+# y= cbind(x,x1)
+
+fit2 <- auto.arima(ds8, seasonal=F, xreg=x5, trace = T)
+summary(fit2)
+
+plot(fit2)
+
+
+
+######################################
+
+autoplot( window(ds_ita8[,"TSTOT.ConsumiITA"],start=c(2015,12))) + 
+  autolayer(fit2, PI=TRUE, series="zio")
+
+fit_f <- forecast(fit, xreg= fourier(y[,"PrezzoScandi"], K=c(1,1), h= 24*7), 24*7)
+plot(fit_f)
+
+autoplot( window(df_comp[,c("PrezzoScandi")],start=c(2015,12))) + 
+  autolayer(fit_f, PI=TRUE, series="zio")
+summary(fit)
+
+fit <- auto.arima(y[,"PrezzoScandi"], seasonal=F, xreg=fourier(y[,"PrezzoScandi"], K=1))
+
+
+fit_f <- forecast(fit, xreg= fourier(y[,"PrezzoScandi"], K=c(1,1), h= 24*7), 24*7)
+plot(fit_f)
+
+autoplot( window(df_comp[,c("PrezzoScandi")],start=c(2015,12))) + 
+  autolayer(fit_f, PI=TRUE, series="zio")
+summary(fit)
 
