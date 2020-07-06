@@ -114,6 +114,52 @@ fit9 %>%
   forecast(xreg=fourier(ds_ita8, K=16, h=7)) ->fit10
 
 fit10
+########################################################################
+############################## Dataset Scandinavia
+ds_sca8 <- read.csv("C:\\Users\\vizzi\\PROG_DSLAB_GITHUB\\Progetto_DSLAB\\DATASET SERIE STORICHE\\scandinavia8mattina.csv")
 
+ds_sca8
+ds_sca8<-  ts(coredata(ds_sca8[,"TSTOT.ConsumiScandi"]), freq = 365, start = c(2012,1,1),  end = c(2015,365))
+
+xsca <- fourier(ds_sca8, K=16)
+
+fitsca <- auto.arima(ds_sca8, seasonal=FALSE, lambda=0, xreg=xsca, trace = T)
+
+autoplot(fitsca)
+
+summary(fitsca)
+
+
+fitsca %>%
+  forecast(xreg=fourier(ds_sca8, K=16, h=7)) %>%
+  autoplot(include=31)
+
+fitsca %>%
+  forecast(xreg=fourier(ds_sca8, K=16, h=7)) ->fit10
+
+fit10
+#################
+#### K4
+
+ds_sca8 <- read.csv("C:\\Users\\vizzi\\PROG_DSLAB_GITHUB\\Progetto_DSLAB\\DATASET SERIE STORICHE\\scandinavia8mattina.csv")
+
+ds_sca8
+ds_sca8<-  ts(coredata(ds_sca8[,"TSTOT.ConsumiScandi"]), freq = 365, start = c(2012,1,1),  end = c(2015,365))
+
+xsca <- fourier(ds_sca8, K=4)
+
+fitsca <- auto.arima(ds_sca8, seasonal=FALSE, lambda=0, xreg=xsca, trace = T)
+
+autoplot(fitsca)
+
+summary(fitsca)
+
+
+fitsca %>%
+  forecast(xreg=fourier(ds_sca8, K=4, h=7)) %>%
+  autoplot(include=31)
+
+fitsca %>%
+  forecast(xreg=fourier(ds_sca8, K=16, h=7)) ->fit10
 
 
