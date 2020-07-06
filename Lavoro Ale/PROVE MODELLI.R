@@ -7,13 +7,14 @@ library(ggfortify)
 library(lubridate)
 library(xts)
 library(forecast)
-
+#install.packages("GGally")
+library(GGally)
 
 TSTOT2 <- read.csv.zoo("/Volumes/HDD_Ale/Progetto_DSLAB/DATASET SERIE STORICHE/Completissimo.csv")
 
 TSTOT <-  ts(coredata(TSTOT2), freq = 8760, start = c(2012,1,1),  end = c(2015,8760))
 
-x <- cbind( Consumi=TSTOT[,"ConsumiPol"],
+x <- cbind( Prezzi=TSTOT[,"PrezzoPol"],
             Gradi=TSTOT[,"GradiPol"],
             BankHolidayPol=TSTOT[,"BankHolidayPol"],
             EndYearPol=TSTOT[,"EndYearPol"],
@@ -21,8 +22,26 @@ x <- cbind( Consumi=TSTOT[,"ConsumiPol"],
             #DayOffPol=TSTOT[,"GradiPol"]
 )
 
-y <- TSTOT[,"PrezzoPol"]
+y <- TSTOT[,"ConsumiPol"]
 
+polonia <- cbind(Prezzi=TSTOT[,"PrezzoPol"],
+                 Gradi=TSTOT[,"GradiPol"],
+                 BankHolidayPol=TSTOT[,"BankHolidayPol"],
+                 EndYearPol=TSTOT[,"EndYearPol"],
+                 DayOfWeekPol=TSTOT[,"DayOfWeekPol"],
+                 Consumi = TSTOT[,"ConsumiPol"])
+regressione <- tslm(y  ~ x, data = TSTOT)
+
+polonia %>%
+  as.data.frame() %>%
+  GGally::ggpairs()
+
+summary(regressione)
+
+autoplot(polonia[,'Consumi'], series="Data") +
+  autolayer(fitted(regressione), series="Fitted") +
+  xlab("Year") + ylab("") +
+  guides(colour=guide_legend(title=" "))
 # NO DIFFED
 fit1 <- auto.arima(y=y, xreg=x, seasonal=FALSE)
 summary(fit1)
