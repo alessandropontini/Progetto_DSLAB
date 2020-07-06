@@ -1682,7 +1682,7 @@ autoplot(ds8)
 
 ######################
 
-x5<- fourier(ds8, K=8)
+x5<- fourier(ds8, K=16)
 x5
 # y= cbind(x,x1)
 
@@ -1693,6 +1693,13 @@ plot(fit2)
 
 
 
+
+
+##############################
+
+# forecast(fit2, h=1)
+fit_88 <- forecast(fit2, xreg= fourier(ds8, K=8, h=1), )
+plot(fit_88)
 ######################################
 
 autoplot( window(ds_ita8[,"TSTOT.ConsumiITA"],start=c(2015,12))) + 
