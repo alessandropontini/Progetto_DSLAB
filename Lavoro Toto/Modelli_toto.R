@@ -78,3 +78,42 @@ fit9 %>%
   forecast(xreg=fourier(ds_ita8, K=16, h=7)) ->fit10
 
 fit10
+
+
+
+#############################################################
+############DATASET COMPLETO
+###################
+
+
+ds_ita8completo <- read.csv("C:\\Users\\vizzi\\PROG_DSLAB_GITHUB\\Progetto_DSLAB\\DATASET SERIE STORICHE\\italia8mattina.csv")
+
+ds_ita8
+ds_ita8<-  ts(coredata(ds_ita8[,"TSTOT.ConsumiITA"]), freq = 365, start = c(2012,1,1),  end = c(2015,365))
+
+x7 <- fourier(ds_ita8, K=16)
+
+# xf<-ds8[,"TSTOT.ConsumiITA"]
+
+fit9 <- auto.arima(ds_ita8, seasonal=FALSE, lambda=0, xreg=x7, trace = T)
+
+autoplot(fit9)
+
+summary(fit9)
+
+
+fit9 %>%  forecast(xreg=x7, h=1 )%>%
+  autoplot()
+########################################################
+
+fit9 %>%
+  forecast(xreg=fourier(ds_ita8, K=16, h=7)) %>%
+  autoplot(include=31)
+
+fit9 %>%
+  forecast(xreg=fourier(ds_ita8, K=16, h=7)) ->fit10
+
+fit10
+
+
+
