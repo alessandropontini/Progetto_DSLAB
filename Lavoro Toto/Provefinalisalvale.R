@@ -53,7 +53,7 @@ predlow <- InvBoxCox(forecastboxcox$lower,lambda2)
 
 predhigh <- InvBoxCox(forecastboxcox$upper,lambda2)
 
-
+# ggplot
 predts <-  ts(pred, freq = 365, start = c(2016,1),  end = c(2016,7))
 predtslow <-  ts(predlow, freq = 365, start = c(2016,1),  end = c(2016,7))
 predtshigh<-  ts(predhigh, freq = 365, start = c(2016,1),  end = c(2016,7))
@@ -80,7 +80,7 @@ dftot <- dftot[-2]
 
 dftot <-  as.data.frame(dftot)
 
-
+# ggplot
 library(ggplot2)
 
 ggplot(data = dfdicembre_2015, aes(x = values, y = x))+
