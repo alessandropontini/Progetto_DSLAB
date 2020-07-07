@@ -311,10 +311,14 @@ str(tot)
 write.csv(tot2, "/Users/alessandropontini/Desktop/totalecondummyseasonal.csv")
 #regressione2 <- tslm(y ~ trend + season )
 names(tot)[1]
-consumi <- cbind(Scandinavia =  tot[,"TSTOT.ConsumiScandi"],
-                 Polonia = tot[, "TSTOT.ConsumiPol"],
-                 UK = tot[,"TSTOT.ConsumiUK"],
-                 ITA = tot[,"TSTOT.ConsumiITA"]
+
+tot <- read.csv("/Volumes/HDD_Ale/Progetto_DSLAB/DATASET SERIE STORICHE/totalecondummyseasonal.csv")
+
+totts <- ts(tot, frequency = 8760, start = c(2012, 1),end=c(2015, 8760))
+
+
+consumi <- cbind(Scandinavia =  totts [,"TSTOT.ConsumiScandi"],
+                 ITA = totts[,"TSTOT.ConsumiITA"]
                 )
 prezzi <- cbind(Scandinavia =  tot[,"TSTOT.PrezzoScandi"],
                  Polonia = tot[,"TSTOT.PrezzoPol"],
@@ -333,7 +337,6 @@ ggsubseriesplot(consumi) +
   ggtitle("Seasonal subseries plot: antidiabetic drug sales")
 
 png("plot.png",4032,3024, units="px", res=500)
-?png
 autoplot(consumi) + xlab("Anni") + ylab("Kilowatt per Ora") + ggtitle("Dati dal 2012 al 2015 del Mercato Elettrico")
 dev.off()
 
