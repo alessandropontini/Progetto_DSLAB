@@ -87,8 +87,9 @@ ggplot(data = dfdicembre_2015, aes(x = values, y = x))+
   geom_line(color = 1, size = 0.5) +
   geom_line(data=dftot,aes(x = values, y = x),color = 2, size = 0.5) +
   geom_ribbon(data=dftot,aes(ymin=`predtslow.80%`,ymax=`predtshigh.80%`),alpha=0.3) +
-  geom_ribbon(data=dftot,aes(ymin=`predtslow.95%`,ymax=`predtshigh.95%`),alpha=0.1)
-
+  geom_ribbon(data=dftot,aes(ymin=`predtslow.95%`,ymax=`predtshigh.95%`),alpha=0.1) + 
+  ylab("Consumi in KW") + xlab("Tempo") + ggtitle("Predizione Arima Ora 8 di Mattina") +
+  scale_y_continuous(expand = c(0.3,0.3))
 
   #geom_line(color = 3, size = 2) 
 # autoplot(dicembre_2015) + autolayer(predts, col=3) + autolayer(intervalliconfidenza[,"predtslow.80%"], col=4) +
