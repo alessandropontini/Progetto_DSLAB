@@ -361,7 +361,7 @@ ds_sca20 <-  ts(coredata(ds_sca20[,"TSTOT.ConsumiScandi"]), freq = 365, start = 
 
 xsca <- fourier(ds_sca20, K=4)
 
-fitsca <- auto.arima(ds_sca20, seasonal=TRUE, lambda=0, xreg=xsca, trace = T)
+fitsca <- auto.arima(ds_sca20, seasonal=F, lambda=0, xreg=xsca, trace = T)
 
 autoplot(fitsca)
 
