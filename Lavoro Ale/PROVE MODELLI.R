@@ -20,6 +20,11 @@ library(olsrr)
 library(systemfit)
 
 library(het.test)
+
+
+?auto.arima
+
+
 TSTOT2 <- read.csv.zoo("/Volumes/HDD_Ale/Progetto_DSLAB/DATASET SERIE STORICHE/Completissimo.csv")
 
 TSTOT <-  ts(coredata(TSTOT2), freq = 8760, start = c(2012,1,1),  end = c(2015,8760))
@@ -469,10 +474,15 @@ z = fourier(TSTOTDIFFED[,"PrezzoPol"], K=c(17520,17520) ,h=17520)
 
 
 train <- TSTOTDIFFED[1:27998,"PrezzoPol"]
+
 test <- TSTOTDIFFED[27999:34998,"PrezzoPol"]
+
+
+
 arima_model <- auto.arima(train, seasonal = FALSE)
 forecast1=predict(arima_model,7000)
-
+?accuracy
+?auto.arima
 library(DMwR)
 autoplot(forecast1)
 accmeasures1=regr.eval(test, forecast1$pred)
