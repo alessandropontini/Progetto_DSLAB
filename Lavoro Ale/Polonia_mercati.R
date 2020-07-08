@@ -1314,3 +1314,5 @@ eventdata <- xts(df_anno_prezzi_2012$prezzo, order.by = time_index)
 #5 migliore di tutti xts
 eventdata2 <- xts(df_anno_prezzi_2012$prezzo, order.by = df_anno_prezzi_2012$dateTime)
 plot.xts(eventdata2)
+?Arima
+
