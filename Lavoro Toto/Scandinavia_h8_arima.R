@@ -8,33 +8,39 @@ ds_sca8 <- read.csv("C:\\Users\\vizzi\\PROG_DSLAB_GITHUB\\Progetto_DSLAB\\DATASE
 train8ore <- ds_sca8[731:1095,"TSTOT.ConsumiScandi"]
 test8ore <- ds_sca8[1096:1460,"TSTOT.ConsumiScandi"]
 
+ds_sca_lav<-ds_sca8[731:1460,"TSTOT.ConsumiScandi"]
 
 
 train8orets <-  ts(coredata(train8ore), freq = 365, start = c(2014,1),  end = c(2014,365))
 test8orets <-  ts(coredata(test8ore), freq = 365, start = c(2015,1),  end = c(2015,365))
 #####################
 
+ds_sca_lavts<-ts(coredata(ds_sca_lav), freq = 365, start = c(2014,1),  end = c(2015,365))
+
 # y <- msts(train8orets, c(7,30*3, 365)) # multiseasonal ts
 # ytest<- msts(test8orets, c(7,365)) # multiseasonal ts
 
 
-# lambda2 <- BoxCox.lambda(train8orets, method = c("guerrero"))
+lambda2 <- BoxCox.lambda(ds_sca_lavts, method = c("guerrero"))
 
 
+dsboxcox <-  BoxCox(ds_sca_lavts, lambda2)
 
-# dsboxcox <-  BoxCox(train8orets, lambda2)
-
-x7 <- fourier(train8orets, K=16)
+x7 <- fourier(ds_sca_lavts, K=8)
 
 
-fit10 <- auto.arima(train8orets, seasonal=T, xreg =x7, lambda =0,  trace = T)
+fit10 <- auto.arima(dsboxcox, seasonal=T, xreg =x7, lambda =lambda2,  trace = T)
 
 summary(fit10)
 
 ##############################
 
 fit10 %>%
-  forecast(xreg=fourier(dsboxcox, K=16, h=365)) -> forecastboxcox
+  forecast(xreg=fourier(dsboxcox, K=8, h=7)) -> forecastboxcox
+
+
+
+
 
 
 
