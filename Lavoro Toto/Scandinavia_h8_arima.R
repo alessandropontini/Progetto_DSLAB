@@ -163,3 +163,23 @@ predplot<-cbind(predplot, values)
 write.csv(predplot , "C:\\Users\\vizzi\\PROG_DSLAB_GITHUB\\Progetto_DSLAB\\DATASET SERIE STORICHE\\predplot_ale.csv")
 write.csv(trainplot2 , "C:\\Users\\vizzi\\PROG_DSLAB_GITHUB\\Progetto_DSLAB\\DATASET SERIE STORICHE\\trainplot2_ale.csv")
 write.csv(test8oretsplot , "C:\\Users\\vizzi\\PROG_DSLAB_GITHUB\\Progetto_DSLAB\\DATASET SERIE STORICHE\\test8oretsplot_ale.csv")
+################
+trainplot <- as.data.frame(train8orets)
+predplot <- as.data.frame(forecastboxcox)
+test8orets <- as.data.frame(test8orets)
+
+values = seq(from = as.Date("2014-01-01"), to = as.Date("2014-12-31"), by = 'day')
+trainplot2 <- cbind(trainplot,values)
+
+
+values = seq(from = as.Date("2015-01-01"), to = as.Date("2015-12-31"), by = 'day')
+test8oretsplot <- cbind(test8orets,values)
+
+
+predplot<-cbind(predplot, values)
+
+
+
+write.csv(predplot , "C:\\Users\\vizzi\\PROG_DSLAB_GITHUB\\Progetto_DSLAB\\DATASET SERIE STORICHE\\pome_predplot.csv")
+write.csv(trainplot2 , "C:\\Users\\vizzi\\PROG_DSLAB_GITHUB\\Progetto_DSLAB\\DATASET SERIE STORICHE\\pome_trainplot2_ale.csv")
+write.csv(test8oretsplot , "C:\\Users\\vizzi\\PROG_DSLAB_GITHUB\\Progetto_DSLAB\\DATASET SERIE STORICHE\\pome_test8oretsplot_ale.csv")
