@@ -21,12 +21,12 @@ ds_sca_lavts<-ts(coredata(ds_sca_lav), freq = 365, start = c(2014,1),  end = c(2
 # ytest<- msts(test8orets, c(7,365)) # multiseasonal ts
 
 
-lambda2 <- BoxCox.lambda(ds_sca_lavts, method = c("guerrero"))
+lambda2 <- BoxCox.lambda(train8orets, method = c("guerrero"))
 
 
-dsboxcox <-  BoxCox(ds_sca_lavts, lambda2)
+dsboxcox <-  BoxCox(train8orets, lambda2)
 
-x7 <- fourier(ds_sca_lavts, K=8)
+x7 <- fourier(train8orets, K=8)
 
 
 fit10 <- auto.arima(dsboxcox, seasonal=T, xreg =x7, lambda =lambda2,  trace = T)
@@ -39,8 +39,25 @@ fit10 %>%
   forecast(xreg=fourier(dsboxcox, K=8, h=7)) -> forecastboxcox
 
 
+pred <- InvBoxCox(forecastboxcox$mean,lambda2)
+predlow <- InvBoxCox(forecastboxcox$lower,lambda2)
+predhigh <- InvBoxCox(forecastboxcox$upper,lambda2)
 
 
+
+# ggplot
+predts <-  ts(pred, freq = 365, start = c(2016,1),  end = c(2016,7))
+predtslow <-  ts(predlow, freq = 365, start = c(2016,1),  end = c(2016,7))
+predtshigh<-  ts(predhigh, freq = 365, start = c(2016,1),  end = c(2016,7))
+
+
+
+intervalliconfidenza <- ts.intersect(predtslow,predtshigh)
+
+
+write.csv(predts , "C:\\Users\\vizzi\\PROG_DSLAB_GITHUB\\Progetto_DSLAB\\DATASET SERIE STORICHE\\predts_SCANDIzio.csv")
+write.csv(intervalliconfidenza , "C:\\Users\\vizzi\\PROG_DSLAB_GITHUB\\Progetto_DSLAB\\DATASET SERIE STORICHE\\intervalli.csv")
+# write.csv(test8oretsplot , "C:\\Users\\vizzi\\PROG_DSLAB_GITHUB\\Progetto_DSLAB\\DATASET SERIE STORICHE\\test8oretsplot_ale.csv")
 
 
 

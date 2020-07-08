@@ -163,3 +163,12 @@ write.csv(predplot , "C:\\Users\\vizzi\\PROG_DSLAB_GITHUB\\Progetto_DSLAB\\DATAS
 write.csv(trainplot2 , "C:\\Users\\vizzi\\PROG_DSLAB_GITHUB\\Progetto_DSLAB\\DATASET SERIE STORICHE\\pomeITA_trainplot2_ale.csv")
 write.csv(test8oretsplot , "C:\\Users\\vizzi\\PROG_DSLAB_GITHUB\\Progetto_DSLAB\\DATASET SERIE STORICHE\\pomeITA_test8oretsplot_ale.csv")
 ###############################
+
+
+#######################
+
+ds_tot <- read.csv("C:\\Users\\vizzi\\PROG_DSLAB_GITHUB\\Progetto_DSLAB\\DATASET SERIE STORICHE\\SerieStorica3NazioniDummy.csv")
+
+ds_tot$X <-NULL
+ds_tot$PrezzoScandi <-NULL
+ds_tot = subset(ds_tot, select = -c(3:6) )
